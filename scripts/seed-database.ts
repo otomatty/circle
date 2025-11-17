@@ -82,6 +82,22 @@ async function main() {
         );
       });
 
+      // プロジェクトの挿入（チームより先に挿入）
+      console.log('Inserting projects...');
+      const projectStmt = db.prepare(`
+        INSERT OR REPLACE INTO projects (id, name, icon, status_id, percent_complete)
+        VALUES (?, ?, ?, ?, ?)
+      `);
+      projects.forEach((p) => {
+        projectStmt.run(
+          p.id,
+          p.name,
+          p.icon.name || 'Box', // icon名を文字列として保存
+          p.status.id,
+          p.percentComplete
+        );
+      });
+
       // チームの挿入
       console.log('Inserting teams...');
       const teamStmt = db.prepare(`
@@ -118,22 +134,6 @@ async function main() {
             project.id
           );
         });
-      });
-
-      // プロジェクトの挿入
-      console.log('Inserting projects...');
-      const projectStmt = db.prepare(`
-        INSERT OR REPLACE INTO projects (id, name, icon, status_id, percent_complete)
-        VALUES (?, ?, ?, ?, ?)
-      `);
-      projects.forEach((p) => {
-        projectStmt.run(
-          p.id,
-          p.name,
-          p.icon.name || 'Box', // icon名を文字列として保存
-          p.status.id,
-          p.percentComplete
-        );
       });
 
       // トランザクションコミット

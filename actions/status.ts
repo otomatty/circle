@@ -2,12 +2,12 @@
 
 import { getDatabase } from '~/lib/db/client';
 import type { Status } from '~/types/status';
-import { getIconFromString } from '~/utils/icon-utils';
 
 /**
  * データベースからステータスリストを取得します
+ * Server Actionsではシリアライズ可能なデータのみを返すため、iconは文字列として返します
  */
-export async function getStatuses(): Promise<Status[]> {
+export async function getStatuses(): Promise<Array<Omit<Status, 'icon'> & { icon: string }>> {
   const db = getDatabase();
 
   try {
@@ -21,13 +21,13 @@ export async function getStatuses(): Promise<Status[]> {
       icon: string | null;
     }>;
 
-    // DBデータをStatusの形式に変換（iconを文字列からコンポーネントに変換）
+    // DBデータをStatusの形式に変換（iconは文字列のまま返す）
     return statuses.map((item) => ({
       id: item.slug,
       name: item.name,
-      icon: getIconFromString(item.icon ?? 'circle'),
+      icon: item.icon ?? 'circle', // 文字列として返す
       color: item.color || '#4f46e5',
-    })) as Status[];
+    }));
   } catch (error) {
     console.error('Statuses取得エラー:', error);
     throw new Error('ステータスデータの取得に失敗しました');

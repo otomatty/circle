@@ -16,6 +16,7 @@ import type { Status } from '~/types/status';
 import { statusesAtom } from '~/store/status-atoms';
 import { CheckIcon } from 'lucide-react';
 import { useEffect, useId, useState } from 'react';
+import { getIconFromString } from '~/utils/icon-utils';
 
 /**
  * ステータスセレクターコンポーネント
@@ -66,7 +67,10 @@ export function StatusSelector({ status, issueId }: StatusSelectorProps) {
             {(() => {
               const selectedItem = statuses.find((item) => item.id === value);
               if (selectedItem) {
-                const Icon = selectedItem.icon;
+                const Icon =
+                  typeof selectedItem.icon === 'string'
+                    ? getIconFromString(selectedItem.icon)
+                    : selectedItem.icon;
                 return <Icon />;
               }
               return null;
@@ -90,7 +94,13 @@ export function StatusSelector({ status, issueId }: StatusSelectorProps) {
                     className="flex items-center justify-between"
                   >
                     <div className="flex items-center gap-2">
-                      <item.icon />
+                      {(() => {
+                        const Icon =
+                          typeof item.icon === 'string'
+                            ? getIconFromString(item.icon)
+                            : item.icon;
+                        return <Icon />;
+                      })()}
                       {item.name}
                     </div>
                     {value === item.id && (

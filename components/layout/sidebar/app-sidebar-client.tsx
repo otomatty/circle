@@ -39,6 +39,7 @@ import { usersAtom } from '~/store/user-atoms';
 import { prioritiesAtom } from '~/store/priority-atoms';
 import { teamsAtom } from '~/store/team-atoms';
 import { useEffect } from 'react';
+import { getIconFromString } from '~/utils/icon-utils';
 
 // アイコン名とコンポーネントのマッピング
 const iconMap: Record<string, LucideIcon> = {
@@ -58,9 +59,9 @@ interface NavItem {
 
 interface AppSidebarClientProps extends React.ComponentProps<typeof Sidebar> {
   teams: Team[];
-  priorities: Priority[];
-  statuses: Status[];
-  projects: Project[];
+  priorities: Array<Omit<Priority, 'icon'> & { icon: string }>;
+  statuses: Array<Omit<Status, 'icon'> & { icon: string }>;
+  projects: Array<Omit<Project, 'icon'> & { icon: string }>;
   labels: LabelInterface[];
   users: User[];
   inboxData: NavItem[];
@@ -89,12 +90,29 @@ export function AppSidebarClient({
   const setTeams = useSetAtom(teamsAtom);
 
   // マウント時にデータをatomに設定
+  // Server Actionsから受け取った文字列のiconをLucideIconに変換
   useEffect(() => {
-    setStatuses(statuses);
-    setProjects(projects);
+    // 文字列のiconをLucideIconに変換
+    const statusesWithIcons: Status[] = statuses.map((s) => ({
+      ...s,
+      icon: getIconFromString(s.icon),
+    }));
+
+    const projectsWithIcons: Project[] = projects.map((p) => ({
+      ...p,
+      icon: getIconFromString(p.icon),
+    }));
+
+    const prioritiesWithIcons: Priority[] = priorities.map((p) => ({
+      ...p,
+      icon: getIconFromString(p.icon),
+    }));
+
+    setStatuses(statusesWithIcons);
+    setProjects(projectsWithIcons);
     setLabels(labels);
     setUsers(users);
-    setPriorities(priorities);
+    setPriorities(prioritiesWithIcons);
     setTeams(teams);
   }, [
     statuses,

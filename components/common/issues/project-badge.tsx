@@ -1,6 +1,7 @@
 import { Badge } from '~/components/ui/badge';
 import type { Project } from '~/types/projects';
 import Link from 'next/link';
+import { getIconFromString } from '~/utils/icon-utils';
 
 /**
  * プロジェクトバッジコンポーネント
@@ -19,7 +20,13 @@ export function ProjectBadge({ project }: { project: Project }) {
         variant="outline"
         className="gap-1.5 rounded-full text-muted-foreground bg-background"
       >
-        <project.icon size={16} />
+{(() => {
+          const Icon =
+            typeof project.icon === 'string'
+              ? getIconFromString(project.icon)
+              : project.icon;
+          return <Icon size={16} />;
+        })()}
         {project.name}
       </Badge>
     </Link>

@@ -82,16 +82,21 @@ const AppConfigSchema = z
 
 /**
  * 環境変数からアプリケーション設定を読み込み、スキーマに基づいて検証
+ * 開発環境ではデフォルト値を使用
  */
 const appConfig = AppConfigSchema.parse({
-  name: process.env.NEXT_PUBLIC_PRODUCT_NAME,
-  title: process.env.NEXT_PUBLIC_SITE_TITLE,
-  description: process.env.NEXT_PUBLIC_SITE_DESCRIPTION,
-  url: process.env.NEXT_PUBLIC_SITE_URL,
-  locale: process.env.NEXT_PUBLIC_DEFAULT_LOCALE,
-  theme: process.env.NEXT_PUBLIC_DEFAULT_THEME_MODE,
-  themeColor: process.env.NEXT_PUBLIC_THEME_COLOR,
-  themeColorDark: process.env.NEXT_PUBLIC_THEME_COLOR_DARK,
+  name: process.env.NEXT_PUBLIC_PRODUCT_NAME || 'Circle',
+  title: process.env.NEXT_PUBLIC_SITE_TITLE || 'Circle - プロジェクト管理アプリ',
+  description:
+    process.env.NEXT_PUBLIC_SITE_DESCRIPTION ||
+    'プロジェクト管理とタスク追跡のためのアプリケーション',
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+  locale: process.env.NEXT_PUBLIC_DEFAULT_LOCALE || 'ja',
+  theme:
+    (process.env.NEXT_PUBLIC_DEFAULT_THEME_MODE as 'light' | 'dark' | 'system') ||
+    'system',
+  themeColor: process.env.NEXT_PUBLIC_THEME_COLOR || '#000000',
+  themeColorDark: process.env.NEXT_PUBLIC_THEME_COLOR_DARK || '#ffffff',
   production,
 });
 

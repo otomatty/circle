@@ -2,12 +2,12 @@
 
 import { getDatabase } from '~/lib/db/client';
 import type { Project } from '~/types/projects';
-import { getIconFromString } from '~/utils/icon-utils';
 
 /**
  * データベースからプロジェクトリストを取得します
+ * Server Actionsではシリアライズ可能なデータのみを返すため、iconは文字列として返します
  */
-export async function getProjects(): Promise<Project[]> {
+export async function getProjects(): Promise<Array<Omit<Project, 'icon'> & { icon: string }>> {
   const db = getDatabase();
 
   try {
@@ -21,16 +21,16 @@ export async function getProjects(): Promise<Project[]> {
       percent_complete: number | null;
     }>;
 
-    // DBデータをProjectの形式に変換（iconを文字列からコンポーネントに変換）
+    // DBデータをProjectの形式に変換（iconは文字列のまま返す）
     return projects.map((item) => ({
       id: item.id,
       name: item.name,
       description: '', // descriptionはスキーマにないので空文字
-      icon: getIconFromString(item.icon ?? 'folder'),
+      icon: item.icon ?? 'folder', // 文字列として返す
       color: '#4f46e5', // データベースにないのでデフォルト値のみ設定
       percentComplete: item.percent_complete || 0,
       status: item.status_id ? { id: item.status_id } : null,
-    })) as unknown as Project[];
+    }));
   } catch (error) {
     console.error('Projects取得エラー:', error);
     throw new Error('プロジェクトデータの取得に失敗しました');

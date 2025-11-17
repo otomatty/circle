@@ -22,8 +22,27 @@ export default async function TeamPage({
     .get(teamSlug) as { id: string } | undefined;
 
   if (!team) {
-    // チームが存在しない場合はホームに戻す
-    return redirect('/');
+    // チームが存在しない場合は、最初のチームにリダイレクト
+    // 無限ループを防ぐため、直接リダイレクトする
+    const firstTeam = db
+      .prepare('SELECT slug FROM teams ORDER BY created_at ASC LIMIT 1')
+      .get() as { slug: string } | undefined;
+
+    if (firstTeam) {
+      return redirect(`/${firstTeam.slug}`);
+    }
+
+    // チームが全く存在しない場合は、エラーメッセージを表示
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">チームが見つかりません</h1>
+          <p className="text-muted-foreground mb-4">
+            指定されたチーム（{teamSlug}）は存在しません。
+          </p>
+        </div>
+      </div>
+    );
   }
 
   // チームのダッシュボードページにリダイレクト

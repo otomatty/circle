@@ -16,6 +16,7 @@ import { prioritiesAtom } from '~/store/priority-atoms';
 import type { Priority } from '~/types/priorities';
 import { CheckIcon } from 'lucide-react';
 import { useEffect, useId, useState } from 'react';
+import { getIconFromString } from '~/utils/icon-utils';
 
 interface PrioritySelectorProps {
   priority: Priority;
@@ -67,7 +68,10 @@ export function PrioritySelector({
             {(() => {
               const selectedItem = priorities.find((item) => item.id === value);
               if (selectedItem) {
-                const Icon = selectedItem.icon;
+                const Icon =
+                  typeof selectedItem.icon === 'string'
+                    ? getIconFromString(selectedItem.icon)
+                    : selectedItem.icon;
                 return <Icon className="text-muted-foreground size-4" />;
               }
               return null;
@@ -96,7 +100,13 @@ export function PrioritySelector({
                     className="flex items-center justify-between"
                   >
                     <div className="flex items-center gap-2">
-                      <item.icon className="text-muted-foreground size-4" />
+                      {(() => {
+                        const Icon =
+                          typeof item.icon === 'string'
+                            ? getIconFromString(item.icon)
+                            : item.icon;
+                        return <Icon className="text-muted-foreground size-4" />;
+                      })()}
                       {item.name}
                     </div>
                     {value === item.id && (

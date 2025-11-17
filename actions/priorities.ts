@@ -2,12 +2,12 @@
 
 import { getDatabase } from '~/lib/db/client';
 import type { Priority } from '~/types/priorities';
-import { getIconFromString } from '~/utils/icon-utils';
 
 /**
  * データベースから優先度リストを取得します
+ * Server Actionsではシリアライズ可能なデータのみを返すため、iconは文字列として返します
  */
-export async function getPriorities(): Promise<Priority[]> {
+export async function getPriorities(): Promise<Array<Omit<Priority, 'icon'> & { icon: string }>> {
   const db = getDatabase();
 
   try {
@@ -20,12 +20,12 @@ export async function getPriorities(): Promise<Priority[]> {
       icon: string | null;
     }>;
 
-    // DBデータをPriorityの形式に変換（iconを文字列からコンポーネントに変換）
+    // DBデータをPriorityの形式に変換（iconは文字列のまま返す）
     return priorities.map((item) => ({
       id: item.slug,
       name: item.name,
-      icon: getIconFromString(item.icon ?? 'circle'),
-    })) as Priority[];
+      icon: item.icon ?? 'circle', // 文字列として返す
+    }));
   } catch (error) {
     console.error('Priorities取得エラー:', error);
     throw new Error('優先度データの取得に失敗しました');

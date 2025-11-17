@@ -1,16 +1,20 @@
-import { initializeI18nClient } from '@kit/i18n/client';
+/**
+ * i18n.client.ts
+ *
+ * クライアントサイドでのi18n機能の初期化を担当します
+ */
+
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import HttpBackend from 'i18next-http-backend';
 
-import {
-  getI18nSettings,
-  defaultI18nNamespaces,
-  languages,
-} from './i18n.settings';
-import { i18nResolver } from './i18n.resolver';
+import { getI18nSettings } from './i18n.settings';
 
 let isInitialized = false;
 
+/**
+ * クライアントサイドでのi18nインスタンスを作成する関数
+ */
 export async function createI18nClientInstance() {
   if (isInitialized || i18next.isInitialized) {
     return i18next;
@@ -20,49 +24,19 @@ export async function createI18nClientInstance() {
     const settings = getI18nSettings(undefined);
 
     // React用のi18nextモジュールを初期化
-    i18next.use(initReactI18next);
+    await i18next
+      .use(HttpBackend)
+      .use(initReactI18next)
+      .init({
+        ...settings,
+        backend: {
+          loadPath: '/locales/{{lng}}/{{ns}}.json',
+        },
+      });
 
-    // 明示的な設定を追加
-    Object.assign(settings, {
-      fallbackLng: 'ja',
-      ns: defaultI18nNamespaces,
-      defaultNS: 'common',
-      fallbackNS: defaultI18nNamespaces,
-      supportedLngs: languages,
-      load: 'all',
-      preload: languages,
-      debug: process.env.NODE_ENV === 'development',
-      interpolation: {
-        escapeValue: false,
-      },
-      react: {
-        useSuspense: false,
-        bindI18n: 'languageChanged loaded',
-        bindI18nStore: 'added removed',
-        transEmptyNodeValue: '',
-        transSupportBasicHtmlNodes: true,
-        transKeepBasicHtmlNodesFor: ['br', 'strong', 'i', 'p', 'span'],
-      },
-      returnNull: false,
-      returnEmptyString: false,
-      returnObjects: true,
-      saveMissing: true,
-      missingKeyHandler: (lng: string, ns: string, key: string) => {
-        console.warn(
-          `Missing translation key: ${key} in namespace: ${ns} for language: ${lng}`
-        );
-      },
-    });
+    isInitialized = true;
 
-    const instance = await initializeI18nClient(settings, i18nResolver);
-
-    // グローバルなi18nextインスタンスを設定
-    if (!isInitialized) {
-      Object.assign(i18next, instance);
-      isInitialized = true;
-    }
-
-    return instance;
+    return i18next;
   } catch (error) {
     console.error('Failed to initialize i18n client:', error);
     throw error;

@@ -9,13 +9,11 @@
  * 4. 言語設定のクッキー管理
  */
 
-import { createI18nSettings } from '@kit/i18n';
-
 /**
  * アプリケーションのデフォルト言語
- * 環境変数から設定可能で、未設定の場合は'en'を使用
+ * 環境変数から設定可能で、未設定の場合は'ja'を使用
  */
-export const defaultLanguage = process.env.NEXT_PUBLIC_DEFAULT_LOCALE ?? 'en';
+export const defaultLanguage = process.env.NEXT_PUBLIC_DEFAULT_LOCALE ?? 'ja';
 
 /**
  * アプリケーションがサポートする言語のリスト
@@ -62,6 +60,37 @@ export const defaultI18nNamespaces = [
 export type TranslationNamespace = (typeof defaultI18nNamespaces)[number];
 
 /**
+ * i18next設定オブジェクトの型
+ */
+export interface I18nSettings {
+  lng: string;
+  fallbackLng: string;
+  ns: string | string[];
+  defaultNS: string;
+  fallbackNS: string | string[];
+  supportedLngs: readonly string[];
+  load: 'languageOnly' | 'currentOnly' | 'all';
+  preload: readonly string[];
+  debug: boolean;
+  interpolation: {
+    escapeValue: boolean;
+  };
+  react: {
+    useSuspense: boolean;
+    bindI18n: string;
+    bindI18nStore: string;
+    transEmptyNodeValue: string;
+    transSupportBasicHtmlNodes: boolean;
+    transKeepBasicHtmlNodesFor: string[];
+  };
+  returnNull: boolean;
+  returnEmptyString: boolean;
+  returnObjects: boolean;
+  saveMissing: boolean;
+  missingKeyHandler?: (lng: string, ns: string, key: string) => void;
+}
+
+/**
  * 指定された言語と名前空間に基づいてi18n設定を生成
  *
  * @param language - 使用する言語。未指定の場合はデフォルト言語を使用
@@ -71,7 +100,7 @@ export type TranslationNamespace = (typeof defaultI18nNamespaces)[number];
 export function getI18nSettings(
   language: string | undefined,
   ns: string | string[] = defaultI18nNamespaces
-) {
+): I18nSettings {
   let lng = language ?? defaultLanguage;
 
   // 指定された言語がサポートされていない場合はデフォルト言語にフォールバック
@@ -83,9 +112,38 @@ export function getI18nSettings(
     lng = defaultLanguage;
   }
 
-  return createI18nSettings({
-    language: lng,
-    namespaces: ns,
-    languages: Array.from(languages),
-  });
+  const namespaces = Array.isArray(ns) ? ns : [ns];
+  const defaultNS = namespaces[0] || 'common';
+
+  return {
+    lng,
+    fallbackLng: defaultLanguage,
+    ns: namespaces,
+    defaultNS,
+    fallbackNS: namespaces,
+    supportedLngs: Array.from(languages),
+    load: 'all',
+    preload: Array.from(languages),
+    debug: process.env.NODE_ENV === 'development',
+    interpolation: {
+      escapeValue: false,
+    },
+    react: {
+      useSuspense: false,
+      bindI18n: 'languageChanged loaded',
+      bindI18nStore: 'added removed',
+      transEmptyNodeValue: '',
+      transSupportBasicHtmlNodes: true,
+      transKeepBasicHtmlNodesFor: ['br', 'strong', 'i', 'p', 'span'],
+    },
+    returnNull: false,
+    returnEmptyString: false,
+    returnObjects: true,
+    saveMissing: true,
+    missingKeyHandler: (lng: string, ns: string, key: string) => {
+      console.warn(
+        `Missing translation key: ${key} in namespace: ${ns} for language: ${lng}`
+      );
+    },
+  };
 }

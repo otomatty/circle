@@ -1,4 +1,3 @@
-import type { Database as CircleDatabase } from '@kit/supabase/circle-database';
 import type { LabelInterface } from './labels';
 import type { Priority } from './priorities';
 import type { Project } from './projects';
@@ -26,27 +25,51 @@ export interface Issue {
 }
 
 /**
- * Supabaseのissuesテーブルの型
+ * SQLiteのissuesテーブルの型
  */
-export type DbIssue = CircleDatabase['circle']['Tables']['issues']['Row'];
+export interface DbIssue {
+  id: string;
+  identifier: string;
+  title: string;
+  description: string | null;
+  status_id: string | null;
+  priority_id: string | null;
+  project_id: string | null;
+  cycle_id: string | null;
+  rank: string | null;
+  created_at: string;
+  updated_at: string;
+}
 
 /**
- * Supabaseのissue_labelsテーブルの型
+ * SQLiteのissue_labelsテーブルの型
  */
-export type DbIssueLabel =
-  CircleDatabase['circle']['Tables']['issue_labels']['Row'];
+export interface DbIssueLabel {
+  id: string;
+  issue_id: string;
+  label_id: string;
+  created_at: string;
+}
 
 /**
- * Supabaseのissue_assigneesテーブルの型
+ * SQLiteのissue_assigneesテーブルの型
  */
-export type DbIssueAssignee =
-  CircleDatabase['circle']['Tables']['issue_assignees']['Row'];
+export interface DbIssueAssignee {
+  id: string;
+  issue_id: string;
+  user_id: string;
+  created_at: string;
+}
 
 /**
- * Supabaseのissue_relationsテーブルの型
+ * SQLiteのissue_relationsテーブルの型
  */
-export type DbIssueRelation =
-  CircleDatabase['circle']['Tables']['issue_relations']['Row'];
+export interface DbIssueRelation {
+  id: string;
+  parent_issue_id: string;
+  child_issue_id: string;
+  created_at: string;
+}
 
 /**
  * データベースのissueレコードを

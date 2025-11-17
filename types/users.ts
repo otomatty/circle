@@ -1,5 +1,3 @@
-import type { Database as CircleDatabase } from '@kit/supabase/circle-database';
-
 /**
  * ユーザー状態の型定義
  */
@@ -20,9 +18,19 @@ export interface User {
 }
 
 /**
- * Supabaseのユーザーテーブルの型
+ * SQLiteのユーザーテーブルの型
  */
-export type DbUser = CircleDatabase['circle']['Tables']['users']['Row'];
+export interface DbUser {
+  id: string;
+  name: string;
+  email: string;
+  avatar_url: string | null;
+  role: string;
+  status: UserStatus | null;
+  joined_date: string;
+  created_at: string;
+  updated_at: string;
+}
 
 /**
  * データベースのユーザーレコードを

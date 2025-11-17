@@ -1,4 +1,3 @@
-import type { Database as CircleDatabase } from '@kit/supabase/circle-database';
 import type { LucideIcon } from 'lucide-react';
 
 /**
@@ -11,10 +10,17 @@ export interface Priority {
 }
 
 /**
- * Supabaseのpriorityテーブルの型
+ * SQLiteの優先度テーブルの型
  */
-export type DbPriority =
-  CircleDatabase['circle']['Tables']['priorities']['Row'];
+export interface DbPriority {
+  id: string;
+  slug: string;
+  name: string;
+  icon: string | null;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+}
 
 /**
  * データベースの優先度レコードを

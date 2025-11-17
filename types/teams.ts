@@ -1,4 +1,3 @@
-import type { Database as CircleDatabase } from '@kit/supabase/circle-database';
 import type { Project } from './projects';
 import type { User } from './users';
 
@@ -17,22 +16,41 @@ export interface Team {
 }
 
 /**
- * Supabaseのチームテーブルの型
+ * SQLiteのチームテーブルの型
  * データベース固有の型定義
  */
-export type DbTeam = CircleDatabase['circle']['Tables']['teams']['Row'];
+export interface DbTeam {
+  id: string;
+  slug: string;
+  name: string;
+  icon: string | null;
+  color: string | null;
+  created_at: string;
+  updated_at: string;
+}
 
 /**
  * チームプロジェクト関連テーブルの型
  */
-export type DbTeamProject =
-  CircleDatabase['circle']['Tables']['team_projects']['Row'];
+export interface DbTeamProject {
+  id: string;
+  team_id: string;
+  project_id: string;
+  created_at: string;
+  updated_at: string;
+}
 
 /**
  * チームメンバー関連テーブルの型
  */
-export type DbTeamMember =
-  CircleDatabase['circle']['Tables']['team_members']['Row'];
+export interface DbTeamMember {
+  id: string;
+  team_id: string;
+  user_id: string;
+  role: string;
+  created_at: string;
+  updated_at: string;
+}
 
 /**
  * DBから取得したチームデータをモックデータ互換の形式に変換するヘルパー関数

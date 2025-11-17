@@ -8,22 +8,13 @@
 
 // 環境変数の取得
 const IS_PRODUCTION = process.env.NODE_ENV === 'production'; // 本番環境かどうか
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL; // SupabaseのURL
 const ENABLE_REACT_COMPILER = process.env.ENABLE_REACT_COMPILER === 'true'; // React Compilerを有効にするかどうか
 
 /**
  * 内部パッケージのリスト
  * これらのパッケージはトランスパイル対象となり、ホットリロードが有効になります
  */
-const INTERNAL_PACKAGES = [
-  '@kit/shared',
-  '@kit/supabase',
-  '@kit/i18n',
-  '@kit/next',
-  '@kit/types',
-  // UIパッケージはビルドエラーを避けるため、プリビルドされたものを使用
-  // '@kit/ui',
-];
+const INTERNAL_PACKAGES = [];
 
 /** @type {import('next').NextConfig} */
 const config = {
@@ -87,8 +78,7 @@ export default config;
 /**
  * リモート画像のパターンを取得する関数
  *
- * 本番環境ではSupabaseのURLのみを許可し、
- * 開発環境ではローカルホストも許可します
+ * 開発環境ではローカルホストを許可します
  *
  * @returns {import('next').NextConfig['remotePatterns']} リモートパターンの配列
  */
@@ -96,27 +86,19 @@ function getRemotePatterns() {
   /** @type {import('next').NextConfig['remotePatterns']} */
   const remotePatterns = [];
 
-  // SupabaseのURLが設定されている場合、そのホスト名を許可リストに追加
-  if (SUPABASE_URL) {
-    const hostname = new URL(SUPABASE_URL).hostname;
-
-    remotePatterns.push({
-      protocol: 'https',
-      hostname,
-    });
+  // 開発環境ではローカルホストを追加
+  if (!IS_PRODUCTION) {
+    remotePatterns.push(
+      {
+        protocol: 'http',
+        hostname: '127.0.0.1',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      }
+    );
   }
 
-  // 本番環境では上記のパターンのみを返し、開発環境ではローカルホストも追加
-  return IS_PRODUCTION
-    ? remotePatterns
-    : [
-        {
-          protocol: 'http',
-          hostname: '127.0.0.1',
-        },
-        {
-          protocol: 'http',
-          hostname: 'localhost',
-        },
-      ];
+  return remotePatterns;
 }

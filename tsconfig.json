@@ -1,6 +1,19 @@
 {
-  "extends": "@kit/tsconfig/base.json",
   "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "preserve",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "incremental": true,
     "baseUrl": ".",
     "paths": {
       "~/*": ["./app/*"],
@@ -31,10 +44,7 @@
     "./config/**/*.ts",
     "components/**/*",
     "lib/**/*.ts",
-    "app",
-    "../../packages/features/auth/src/components/login-dialog.tsx",
-    "../../packages/ui/src/custom/theme-toggle.tsx",
-    "../admin/lib/server/gemini/skills.ts"
+    "app"
   ],
   "exclude": ["node_modules", ".next"]
 }

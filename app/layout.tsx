@@ -1,10 +1,8 @@
 import { cookies } from 'next/headers';
 import type { Metadata } from 'next';
+import { Toaster } from 'sonner';
 
-import { Toaster } from '@kit/ui/sonner';
-import { cn } from '@kit/ui/utils';
-import { getAuthState } from '@kit/next/actions';
-
+import { cn } from '~/lib/utils/cn';
 import { RootProviders } from '~/components/root-providers';
 import { heading, sans } from '~/lib/fonts';
 import { createI18nServerInstance } from '~/lib/i18n/i18n.server';
@@ -32,18 +30,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { language } = await createI18nServerInstance();
+  const i18nInstance = await createI18nServerInstance();
+  const language = i18nInstance.language || 'ja';
   const theme = await getTheme();
   const className = getClassName(theme);
-
-  let profile = null;
-  try {
-    const authState = await getAuthState();
-    profile = authState.profile;
-  } catch (error) {
-    console.error('認証状態の取得に失敗しました:', error);
-    console.log('認証状態: 未認証です（エラーが発生しました）');
-  }
 
   return (
     <html lang={language} className={className}>
@@ -82,5 +72,3 @@ async function getTheme() {
   const cookiesStore = await cookies();
   return cookiesStore.get('theme')?.value as 'light' | 'dark' | 'system';
 }
-
-// generateRootMetadataを使用する代わりに、直接メタデータを定義しました

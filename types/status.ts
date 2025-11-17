@@ -1,4 +1,3 @@
-import type { Database as CircleDatabase } from '@kit/supabase/circle-database';
 import type { LucideIcon } from 'lucide-react';
 import { getIconFromString } from '~/utils/icon-utils';
 
@@ -14,9 +13,18 @@ export interface Status {
 }
 
 /**
- * Supabaseのステータステーブルの型
+ * SQLiteのステータステーブルの型
  */
-export type DbStatus = CircleDatabase['circle']['Tables']['statuses']['Row'];
+export interface DbStatus {
+  id: string;
+  slug: string;
+  name: string;
+  color: string | null;
+  icon: string | null;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+}
 
 /**
  * データベースのステータスレコードを

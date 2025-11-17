@@ -1,38 +1,89 @@
 'use server';
 
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
-import type { Database as CircleDatabase } from '@kit/supabase/circle-database';
+import { getDatabase } from '~/lib/db/client';
 
 /**
  * 特定のプロジェクトに関連するタスク(課題)一覧を取得します
  * @param projectId プロジェクトID
  */
 export async function getIssuesByProjectId(projectId: string) {
-  // 両方のスキーマを統合した型を指定
-  const supabase = getSupabaseServerClient<CircleDatabase>();
+  const db = getDatabase();
 
-  const { data, error } = await supabase
-    .schema('circle')
-    .from('issues')
-    .select(`
-      id,
-      identifier,
-      title,
-      description,
-      status:status_id (id, name, slug, color, icon),
-      priority:priority_id (id, name, slug, icon),
-      created_at,
-      project_id
-    `)
-    .eq('project_id', projectId)
-    .order('created_at', { ascending: false });
+  try {
+    const issues = db
+      .prepare(
+        `
+        SELECT 
+          i.id,
+          i.identifier,
+          i.title,
+          i.description,
+          i.created_at,
+          i.project_id,
+          s.id as status_id,
+          s.name as status_name,
+          s.slug as status_slug,
+          s.color as status_color,
+          s.icon as status_icon,
+          p.id as priority_id,
+          p.name as priority_name,
+          p.slug as priority_slug,
+          p.icon as priority_icon
+        FROM issues i
+        LEFT JOIN statuses s ON i.status_id = s.id
+        LEFT JOIN priorities p ON i.priority_id = p.id
+        WHERE i.project_id = ?
+        ORDER BY i.created_at DESC
+      `
+      )
+      .all(projectId) as Array<{
+      id: string;
+      identifier: string;
+      title: string;
+      description: string | null;
+      created_at: string;
+      project_id: string | null;
+      status_id: string | null;
+      status_name: string | null;
+      status_slug: string | null;
+      status_color: string | null;
+      status_icon: string | null;
+      priority_id: string | null;
+      priority_name: string | null;
+      priority_slug: string | null;
+      priority_icon: string | null;
+    }>;
 
-  if (error) {
+    // Supabaseの形式に合わせてデータを整形
+    return issues.map((issue) => ({
+      id: issue.id,
+      identifier: issue.identifier,
+      title: issue.title,
+      description: issue.description,
+      created_at: issue.created_at,
+      project_id: issue.project_id,
+      status: issue.status_id
+        ? {
+            id: issue.status_id,
+            name: issue.status_name || '',
+            slug: issue.status_slug || '',
+            color: issue.status_color || null,
+            icon: issue.status_icon || null,
+          }
+        : null,
+      priority: issue.priority_id
+        ? {
+            id: issue.priority_id,
+            name: issue.priority_name || '',
+            slug: issue.priority_slug || '',
+            icon: issue.priority_icon || null,
+          }
+        : null,
+    }));
+  } catch (error) {
     console.error(`プロジェクト ${projectId} のタスク取得エラー:`, error);
     throw new Error('タスクの取得に失敗しました');
   }
-
-  return data;
 }
 
 // 以下は将来的に実装するCRUD操作

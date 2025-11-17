@@ -1,85 +1,60 @@
 'use server';
 
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { getDatabase } from '~/lib/db/client';
 import type { Team } from '~/types/teams';
-import type { Database as CircleDatabase } from '@kit/supabase/circle-database';
-
-// プロジェクトデータの型を定義
-type ProjectRecord = {
-  id: string;
-  name: string;
-  icon: string | null;
-  status_id: string | null;
-  percent_complete: number | null;
-};
+import { getIconFromString } from '~/utils/icon-utils';
 
 /**
  * チームの一覧とそれに紐づくプロジェクトを取得します
  */
 export async function getTeams(): Promise<Team[]> {
-  const supabase = getSupabaseServerClient<CircleDatabase>();
+  const db = getDatabase();
 
-  // まずチームの基本情報を取得
-  const { data: teamsData, error: teamsError } = await supabase
-    .schema('circle')
-    .from('teams')
-    .select('*');
+  try {
+    // チームの基本情報を取得
+    const teamsData = db
+      .prepare('SELECT * FROM teams')
+      .all() as Array<{
+      id: string;
+      slug: string;
+      name: string;
+      icon: string | null;
+      color: string | null;
+    }>;
 
-  if (teamsError) {
-    console.error('Teams取得エラー:', teamsError);
-    throw new Error('チームデータの取得に失敗しました');
-  }
-
-  // チームごとのプロジェクト情報を取得
-  const teams = await Promise.all(
-    teamsData.map(async (team) => {
+    // チームごとのプロジェクト情報を取得
+    const teams = teamsData.map((team) => {
       // チームに関連するプロジェクトを取得
-      const { data: projectsData, error: projectsError } = await supabase
-        .schema('circle')
-        .from('team_projects')
-        .select(`
-          project_id,
-          projects:project_id (
-            id,
-            name,
-            icon,
-            status_id,
-            percent_complete
-          )
-        `)
-        .eq('team_id', team.id);
-
-      if (projectsError) {
-        console.error(
-          `Team ${team.name} のプロジェクト取得エラー:`,
-          projectsError
-        );
-        return {
-          id: team.slug,
-          name: team.name,
-          icon: team.icon,
-          projects: [],
-          joined: true, // デフォルトはtrueとする
-        };
-      }
+      const projectsData = db
+        .prepare(
+          `
+          SELECT 
+            p.id,
+            p.name,
+            p.icon,
+            p.status_id,
+            p.percent_complete
+          FROM team_projects tp
+          INNER JOIN projects p ON tp.project_id = p.id
+          WHERE tp.team_id = ?
+        `
+        )
+        .all(team.id) as Array<{
+        id: string;
+        name: string;
+        icon: string | null;
+        status_id: string | null;
+        percent_complete: number | null;
+      }>;
 
       // プロジェクトデータを整形
-      const projects = projectsData.map((item) => {
-        // item.projectsはオブジェクトとして扱う
-        const projectData = item.projects as ProjectRecord;
-        return {
-          id: projectData.id,
-          name: projectData.name,
-          icon: {
-            name: projectData.icon ?? 'folder',
-          },
-          percentComplete: projectData.percent_complete,
-          // statusはモックデータと互換性を持たせるため簡易的に設定
-          status: {
-            id: projectData.status_id,
-          },
-        };
-      });
+      const projects = projectsData.map((projectData) => ({
+        id: projectData.id,
+        name: projectData.name,
+        icon: getIconFromString(projectData.icon ?? 'folder'),
+        percentComplete: projectData.percent_complete || 0,
+        status: projectData.status_id ? { id: projectData.status_id } : null,
+      }));
 
       return {
         id: team.slug,
@@ -88,8 +63,11 @@ export async function getTeams(): Promise<Team[]> {
         projects,
         joined: true, // デフォルトはtrueとする
       };
-    })
-  );
+    });
 
-  return teams as Team[];
+    return teams as Team[];
+  } catch (error) {
+    console.error('Teams取得エラー:', error);
+    throw new Error('チームデータの取得に失敗しました');
+  }
 }

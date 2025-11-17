@@ -1,63 +1,72 @@
 'use server';
 
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
+import { getDatabase } from '~/lib/db/client';
 import type { Status } from '~/types/status';
 import { getIconFromString } from '~/utils/icon-utils';
-import type { Database as CircleDatabase } from '@kit/supabase/circle-database';
 
 /**
  * データベースからステータスリストを取得します
  */
 export async function getStatuses(): Promise<Status[]> {
-  const supabase = getSupabaseServerClient<CircleDatabase>();
+  const db = getDatabase();
 
-  const { data, error } = await supabase
-    .schema('circle')
-    .from('statuses')
-    .select('*')
-    .order('display_order', { ascending: true });
+  try {
+    const statuses = db
+      .prepare('SELECT * FROM statuses ORDER BY display_order ASC')
+      .all() as Array<{
+      id: string;
+      slug: string;
+      name: string;
+      color: string | null;
+      icon: string | null;
+    }>;
 
-  if (error) {
+    // DBデータをStatusの形式に変換（iconを文字列からコンポーネントに変換）
+    return statuses.map((item) => ({
+      id: item.slug,
+      name: item.name,
+      icon: getIconFromString(item.icon ?? 'circle'),
+      color: item.color || '#4f46e5',
+    })) as Status[];
+  } catch (error) {
     console.error('Statuses取得エラー:', error);
     throw new Error('ステータスデータの取得に失敗しました');
   }
-
-  // DBデータをStatusの形式に変換（iconを文字列からコンポーネントに変換）
-  return data.map((item) => ({
-    id: item.slug,
-    name: item.name,
-    icon: getIconFromString(item.icon ?? 'circle'),
-    color: item.color,
-  })) as Status[];
 }
 
 /**
  * ステータスごとの課題数を取得します
  */
 export async function getStatusCounts(): Promise<Record<string, number>> {
-  const supabase = getSupabaseServerClient<CircleDatabase>();
+  const db = getDatabase();
 
-  const { data, error } = await supabase
-    .schema('circle')
-    .from('issues')
-    .select('status_id, statuses:status_id(slug)')
-    .not('status_id', 'is', null);
+  try {
+    const issues = db
+      .prepare(
+        `
+        SELECT i.status_id, s.slug
+        FROM issues i
+        INNER JOIN statuses s ON i.status_id = s.id
+        WHERE i.status_id IS NOT NULL
+      `
+      )
+      .all() as Array<{
+      status_id: string;
+      slug: string;
+    }>;
 
-  if (error) {
+    // 各ステータスのカウントを集計
+    const counts: Record<string, number> = {};
+
+    for (const item of issues) {
+      if (item.slug) {
+        counts[item.slug] = (counts[item.slug] || 0) + 1;
+      }
+    }
+
+    return counts;
+  } catch (error) {
     console.error('Status counts 取得エラー:', error);
     throw new Error('ステータスカウントの取得に失敗しました');
   }
-
-  // 各ステータスのカウントを集計
-  const counts: Record<string, number> = {};
-
-  // forEachの代わりにfor...ofを使用（lint対応）
-  for (const item of data) {
-    if (item.statuses?.slug) {
-      const statusId = item.statuses.slug;
-      counts[statusId] = (counts[statusId] || 0) + 1;
-    }
-  }
-
-  return counts;
 }

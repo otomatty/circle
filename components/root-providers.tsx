@@ -2,37 +2,15 @@
 
 import { useMemo } from 'react';
 
-import dynamic from 'next/dynamic';
-
 import { ThemeProvider } from '~/components/theme-provider';
+import { If } from '~/components/ui/if';
 
-import { CaptchaProvider } from '@kit/auth/captcha/client';
-import { I18nProvider } from '@kit/i18n/provider';
-import { If } from '@kit/ui/if';
-import { VersionUpdater } from '@kit/ui/version-updater';
-
-import { AuthProvider } from '~/components/auth-provider';
 import appConfig from '~/config/app.config';
-import authConfig from '~/config/auth.config';
 import featuresFlagConfig from '~/config/feature-flags.config';
-import { i18nResolver } from '~/lib/i18n/i18n.resolver';
+import { I18nProvider } from '~/lib/i18n/provider';
 import { getI18nSettings } from '~/lib/i18n/i18n.settings';
 
 import { ReactQueryProvider } from './react-query-provider';
-
-const captchaSiteKey = authConfig.captchaTokenSiteKey;
-
-const CaptchaTokenSetter = dynamic(async () => {
-  if (!captchaSiteKey) {
-    return Promise.resolve(() => null);
-  }
-
-  const { CaptchaTokenSetter } = await import('@kit/auth/captcha/client');
-
-  return {
-    default: CaptchaTokenSetter,
-  };
-});
 
 export function RootProviders({
   lang,
@@ -46,25 +24,19 @@ export function RootProviders({
 
   return (
     <ReactQueryProvider>
-      <I18nProvider settings={i18nSettings} resolver={i18nResolver}>
-        <CaptchaProvider>
-          <CaptchaTokenSetter siteKey={captchaSiteKey} />
-
-          <AuthProvider>
-            <ThemeProvider
-              attribute="class"
-              enableSystem
-              disableTransitionOnChange
-              defaultTheme={theme}
-              enableColorScheme={false}
-            >
-              {children}
-            </ThemeProvider>
-          </AuthProvider>
-        </CaptchaProvider>
+      <I18nProvider settings={i18nSettings}>
+        <ThemeProvider
+          attribute="class"
+          enableSystem
+          disableTransitionOnChange
+          defaultTheme={theme}
+          enableColorScheme={false}
+        >
+          {children}
+        </ThemeProvider>
 
         <If condition={featuresFlagConfig.enableVersionUpdater}>
-          <VersionUpdater />
+          {/* VersionUpdaterは後で実装または削除 */}
         </If>
       </I18nProvider>
     </ReactQueryProvider>

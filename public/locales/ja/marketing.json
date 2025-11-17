@@ -1,0 +1,61 @@
+{
+  "hero": {
+    "title": "次世代のプラットフォーム",
+    "subtitle": "より良いビジネスのために",
+    "cta": "今すぐ始める"
+  },
+  "features": {
+    "title": "主な機能",
+    "subtitle": "あなたのビジネスを支援する機能",
+    "feature1": {
+      "title": "シンプルな操作",
+      "description": "直感的なインターフェースで簡単に使いこなせます"
+    },
+    "feature2": {
+      "title": "高度な分析",
+      "description": "データに基づく意思決定をサポートします"
+    },
+    "feature3": {
+      "title": "セキュリティ",
+      "description": "最高レベルのセキュリティを提供します"
+    }
+  },
+
+  "blog": "ブログ",
+  "blogSubtitle": "プラットフォームに関するニュースと更新情報",
+  "documentation": "ドキュメント",
+  "documentationSubtitle": "プラットフォームの使い方とチュートリアル",
+  "faq": "よくある質問",
+  "faqSubtitle": "プラットフォームに関するよくある質問",
+  "pricing": "料金",
+  "pricingSubtitle": "料金プランとお支払い方法",
+  "backToBlog": "ブログに戻る",
+  "noPosts": "記事が見つかりません",
+  "blogPaginationNext": "次のページ",
+  "blogPaginationPrevious": "前のページ",
+  "readMore": "続きを読む",
+  "contactFaq": "ご不明な点がございましたら、お問い合わせください",
+  "contact": "お問い合わせ",
+  "about": "会社概要",
+  "product": "製品情報",
+  "legal": "法的情報",
+  "termsOfService": "利用規約",
+  "termsOfServiceDescription": "利用規約と条件",
+  "cookiePolicy": "Cookieポリシー",
+  "cookiePolicyDescription": "Cookieポリシーと使用方法について",
+  "privacyPolicy": "プライバシーポリシー",
+  "privacyPolicyDescription": "プライバシーポリシーとお客様のデータの取り扱いについて",
+  "contactDescription": "ご質問やフィードバックはこちらからお問い合わせください",
+  "contactHeading": "メッセージを送信",
+  "contactSubheading": "できるだけ早くご返信いたします",
+  "contactName": "お名前",
+  "contactEmail": "メールアドレス",
+  "contactMessage": "メッセージ",
+  "sendMessage": "メッセージを送信",
+  "contactSuccess": "メッセージが正常に送信されました",
+  "contactError": "メッセージの送信中にエラーが発生しました",
+  "contactSuccessDescription": "メッセージを受け付けました。できるだけ早くご返信いたします",
+  "contactErrorDescription": "メッセージの送信中にエラーが発生しました。後ほど再度お試しください",
+  "footerDescription": "ビジネスの成長をサポートする次世代のプラットフォーム",
+  "copyright": "© {{year}} {{product}}. All rights reserved."
+}

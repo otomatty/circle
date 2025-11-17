@@ -1,0 +1,40 @@
+{
+  "extends": "@kit/tsconfig/base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./app/*"],
+      "~/config/*": ["./config/*"],
+      "~/components/*": ["./components/*"],
+      "~/types/*": ["./types/*"],
+      "~/lib/*": ["./lib/*"],
+      "~/actions/*": ["./actions/*"],
+      "~/services/*": ["./services/*"],
+      "~/hooks/*": ["./hooks/*"],
+      "~/store/*": ["./store/*"],
+      "~/data/*": ["./data/*"],
+      "~/utils/*": ["./utils/*"],
+      "~/mock-data/*": ["./mock-data/*"]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
+  },
+  "include": [
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    "*.ts",
+    "*.tsx",
+    "./config/**/*.ts",
+    "components/**/*",
+    "lib/**/*.ts",
+    "app",
+    "../../packages/features/auth/src/components/login-dialog.tsx",
+    "../../packages/ui/src/custom/theme-toggle.tsx",
+    "../admin/lib/server/gemini/skills.ts"
+  ],
+  "exclude": ["node_modules", ".next"]
+}

@@ -1,0 +1,251 @@
+/*
+* theme.css
+*
+* Shadcn UIテーマ
+* このファイルを使用してShadcn UIの既存のスタイルをカスタマイズまたはオーバーライドします。
+*
+* このファイルの役割：
+* - shadcn-ui.cssで定義された変数をアプリケーション固有の変数名にマッピング
+* - アニメーション効果の定義
+* - カスタムユーティリティの提供
+* - テーマ関連の拡張機能の実装
+ */
+
+/* コンテナユーティリティ */
+
+/* Shadcn UIテーマ */
+@theme {
+  /* 基本カラーのマッピング */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-background-line: var(--background-line);
+
+  /* カードコンポーネントのマッピング */
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  /* ポップオーバーのマッピング */
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  /* プライマリカラーのマッピング */
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  /* セカンダリカラーのマッピング */
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  /* ミュートカラーのマッピング */
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  /* アクセントカラーのマッピング */
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  /* 破壊的アクション用カラーのマッピング */
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  /* ユーティリティカラーのマッピング */
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* チャート用カラーのマッピング */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* カスタムカラーのマッピング */
+  --color-1: var(--color-1);
+  --color-2: var(--color-2);
+  --color-3: var(--color-3);
+  --color-4: var(--color-4);
+  --color-5: var(--color-5);
+
+  /* 境界線の丸みのマッピング */
+  --radius-radius: var(--radius);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+
+  /* フォントのマッピング */
+  --font-sans: -apple-system, var(--font-sans);
+  --font-heading: var(--font-heading);
+
+  /* サイドバー用カラーのマッピング */
+  --color-sidebar: var(--sidebar-background);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* アニメーション変数の定義 */
+  --animate-fade-up: fade-up 0.5s;
+  --animate-fade-down: fade-down 0.5s;
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-shimmer-slide: shimmer-slide 1.5s linear infinite;
+  --animate-spin-around: spin-around 6s ease-in-out infinite;
+  --animate-orbit: orbit calc(var(--duration) * 1s) linear infinite;
+  --animate-marquee: marquee var(--duration) linear infinite;
+  --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+  --animate-ripple: ripple 1.5s ease-in-out infinite;
+  --animate-aurora-border: aurora-border 8s ease-in-out infinite;
+  --animate-aurora-1: aurora-1 15s ease-in-out infinite;
+  --animate-aurora-2: aurora-2 15s ease-in-out infinite;
+  --animate-aurora-3: aurora-3 15s ease-in-out infinite;
+  --animate-aurora-4: aurora-4 15s ease-in-out infinite;
+  --animate-background-position-spin: background-position-spin 3s ease-in-out infinite alternate;
+  --animate-meteor: meteor var(--duration) linear infinite;
+  --animate-aurora-gradient: aurora-gradient 15s ease infinite;
+  --animate-spin-slow: spin 4s linear infinite;
+  --animate-spin-reverse: spin-reverse 1s linear infinite;
+
+  /* キーフレーム定義を一元化 */
+  @keyframes accordion-down {
+    from { height: 0; }
+    to { height: var(--radix-accordion-content-height); }
+  }
+
+  @keyframes accordion-up {
+    from { height: var(--radix-accordion-content-height); }
+    to { height: 0; }
+  }
+
+  @keyframes fade-up {
+    0% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    80% { opacity: 0.6; }
+    100% {
+      opacity: 1;
+      transform: translateY(0px);
+    }
+  }
+
+  @keyframes fade-down {
+    0% {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    80% { opacity: 0.6; }
+    100% {
+      opacity: 1;
+      transform: translateY(0px);
+    }
+  }
+
+  @keyframes shimmer-slide {
+    to { transform: translate(calc(100cqw - 100%), 0); }
+  }
+
+  @keyframes spin-around {
+    0% { transform: translateZ(0) rotate(0); }
+    15%, 35% { transform: translateZ(0) rotate(90deg); }
+    65%, 85% { transform: translateZ(0) rotate(270deg); }
+    100% { transform: translateZ(0) rotate(360deg); }
+  }
+
+  @keyframes orbit {
+    0% {
+      transform: 
+        rotate(calc(var(--angle) * 1deg))
+        translateX(calc(var(--radius) * 1px))
+        rotate(calc(var(--angle) * -1deg));
+    }
+    100% {
+      transform: 
+        rotate(calc(var(--angle) * 1deg + 360deg))
+        translateX(calc(var(--radius) * 1px))
+        rotate(calc(var(--angle) * -1deg - 360deg));
+    }
+  }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(calc(-100% - var(--gap))); }
+  }
+
+  @keyframes marquee-vertical {
+    from { transform: translateY(0); }
+    to { transform: translateY(calc(-100% - var(--gap))); }
+  }
+
+  @keyframes ripple {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(0.9); }
+  }
+
+  @keyframes aurora-border {
+    0%, 100% { border-radius: 37% 29% 27% 27% / 28% 25% 41% 37%; }
+    25% { border-radius: 47% 29% 39% 49% / 61% 19% 66% 26%; }
+    50% { border-radius: 57% 23% 47% 72% / 63% 17% 66% 33%; }
+    75% { border-radius: 28% 49% 29% 100% / 93% 20% 64% 25%; }
+  }
+
+  @keyframes aurora-1 {
+    0%, 100% { top: 0; right: 0; }
+    50% { top: 50%; right: 25%; }
+    75% { top: 25%; right: 50%; }
+  }
+
+  @keyframes aurora-2 {
+    0%, 100% { top: 0; left: 0; }
+    60% { top: 75%; left: 25%; }
+    85% { top: 50%; left: 50%; }
+  }
+
+  @keyframes aurora-3 {
+    0%, 100% { bottom: 0; left: 0; }
+    40% { bottom: 50%; left: 25%; }
+    65% { bottom: 25%; left: 50%; }
+  }
+
+  @keyframes aurora-4 {
+    0%, 100% { bottom: 0; right: 0; }
+    50% { bottom: 25%; right: 40%; }
+    90% { bottom: 50%; right: 25%; }
+  }
+
+  @keyframes background-position-spin {
+    0% { background-position: top center; }
+    100% { background-position: bottom center; }
+  }
+
+  @keyframes meteor {
+    0% {
+      transform: rotate(var(--angle)) translateX(0);
+      opacity: 1;
+    }
+    70% { opacity: 1; }
+    100% {
+      transform: rotate(var(--angle)) translateX(-500px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes aurora-gradient {
+    0%, 100% {
+      background-size: 400% 400%;
+      background-position: 0% 50%;
+    }
+    50% {
+      background-size: 400% 400%;
+      background-position: 100% 50%;
+    }
+  }
+
+  @keyframes spin-reverse {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+  }
+}

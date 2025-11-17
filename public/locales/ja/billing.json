@@ -1,0 +1,141 @@
+{
+  "title": "請求",
+  "subscription": "サブスクリプション",
+  "currentPlan": "現在のプラン",
+  "billingCycle": "請求サイクル",
+  "nextBilling": "次回請求日",
+  "paymentMethod": "支払い方法",
+  "addPaymentMethod": "支払い方法を追加",
+  "updatePaymentMethod": "支払い方法を更新",
+  "billingHistory": "請求履歴",
+  "invoices": "請求書",
+  "downloadInvoice": "請求書をダウンロード",
+  "changePlan": "プランを変更",
+  "cancelSubscription": "サブスクリプションをキャンセル",
+  "reactivateSubscription": "サブスクリプションを再開",
+  "plans": {
+    "free": "無料プラン",
+    "pro": "プロプラン",
+    "enterprise": "エンタープライズ"
+  },
+  "paymentMethodAdded": "支払い方法を追加しました",
+  "paymentMethodError": "支払い方法の追加に失敗しました",
+  "subscriptionUpdated": "サブスクリプションを更新しました",
+  "subscriptionError": "サブスクリプションの更新に失敗しました",
+  "subscriptionTabSubheading": "サブスクリプションと請求の管理",
+  "planCardTitle": "ご利用中のプラン",
+  "planCardDescription": "現在のプランの詳細です。プランの変更やサブスクリプションのキャンセルはいつでも可能です。",
+  "planRenewal": "{{interval}}ごとに{{price}}で更新",
+  "planDetails": "プラン詳細",
+  "checkout": "決済へ進む",
+  "trialEndsOn": "トライアル期間終了日",
+  "billingPortalCardButton": "請求ポータルへ",
+  "billingPortalCardTitle": "請求詳細の管理",
+  "billingPortalCardDescription": "請求ポータルでサブスクリプションと請求を管理できます。プランの更新やキャンセル、請求書のダウンロードが可能です。",
+  "cancelAtPeriodEndDescription": "サブスクリプションは{{- endDate}}にキャンセルされる予定です。",
+  "renewAtPeriodEndDescription": "サブスクリプションは{{- endDate}}に更新される予定です",
+  "noPermissionsAlertHeading": "請求設定を変更する権限がありません",
+  "noPermissionsAlertBody": "アカウントの請求設定を変更するには、アカウント所有者にお問い合わせください。",
+  "checkoutSuccessTitle": "完了しました！",
+  "checkoutSuccessDescription": "ご登録ありがとうございます。サブスクリプションの処理が完了しました！確認メールを{{ customerEmail }}に送信いたしました。",
+  "checkoutSuccessBackButton": "アプリへ進む",
+  "cannotManageBillingAlertTitle": "請求管理ができません",
+  "cannotManageBillingAlertDescription": "請求を管理する権限がありません。アカウント所有者にお問い合わせください。",
+  "manageTeamPlan": "チームプランの管理",
+  "manageTeamPlanDescription": "チームのニーズに合ったプランをお選びください。プランのアップグレードまたはダウングレードはいつでも可能です。",
+  "basePlan": "基本プラン",
+  "billingInterval": {
+    "label": "請求間隔を選択",
+    "month": "月額請求",
+    "year": "年額請求"
+  },
+  "perMonth": "月額",
+  "custom": "カスタムプラン",
+  "lifetime": "ライフタイム",
+  "trialPeriod": "{{period}}日間トライアル",
+  "perPeriod": "{{period}}あたり",
+  "redirectingToPayment": "決済ページへ移動中です。お待ちください...",
+  "proceedToPayment": "お支払いへ進む",
+  "startTrial": "トライアルを開始",
+  "perTeamMember": "メンバー1人あたり",
+  "perUnit": "{{unit}}使用量あたり",
+  "teamMembers": "チームメンバー",
+  "includedUpTo": "プランに{{unit}}が{{upTo}}まで含まれます",
+  "fromPreviousTierUpTo": "次の{{upTo}}{{unit}}までの{{unit}}あたり",
+  "andAbove": "{{previousTier}}{{unit}}以上",
+  "forEveryUnit": "{{unit}}ごと",
+  "setupFee": "セットアップ料金{{setupFee}}が追加",
+  "perUnitIncluded": "（{{included}}含む）",
+  "featuresLabel": "機能",
+  "detailsLabel": "詳細",
+  "planPickerLabel": "プランを選択",
+  "planCardLabel": "プランの管理",
+  "planPickerAlertErrorTitle": "決済リクエストエラー",
+  "planPickerAlertErrorDescription": "決済リクエスト中にエラーが発生しました。後ほど再度お試しください。",
+  "subscriptionCancelled": "サブスクリプションがキャンセルされました",
+  "cancelSubscriptionDate": "サブスクリプションは期間終了時にキャンセルされます",
+  "noPlanChosen": "プランを選択してください",
+  "noIntervalPlanChosen": "請求間隔を選択してください",
+  "status": {
+    "free": {
+      "badge": "無料プラン",
+      "heading": "現在無料プランをご利用中です",
+      "description": "無料プランをご利用中です。いつでも有料プランにアップグレードできます。"
+    },
+    "active": {
+      "badge": "アクティブ",
+      "heading": "サブスクリプションはアクティブです",
+      "description": "サブスクリプションはアクティブです。カスタマーポータルでサブスクリプションと請求を管理できます。"
+    },
+    "trialing": {
+      "badge": "トライアル",
+      "heading": "トライアル中です",
+      "description": "トライアル期間中はプランの特典をお楽しみいただけます"
+    },
+    "past_due": {
+      "badge": "支払い期限超過",
+      "heading": "請求書の支払いが期限を過ぎています",
+      "description": "請求書の支払いが期限を過ぎています。お支払い方法を更新してください。"
+    },
+    "canceled": {
+      "badge": "キャンセル済み",
+      "heading": "サブスクリプションはキャンセルされました",
+      "description": "サブスクリプションはキャンセルされ、請求期間の終了時に終了する予定です。"
+    },
+    "unpaid": {
+      "badge": "未払い",
+      "heading": "請求書が未払いです",
+      "description": "請求書が未払いです。お支払い方法を更新してください。"
+    },
+    "incomplete": {
+      "badge": "不完全",
+      "heading": "お支払いを待機中です",
+      "description": "お支払いの処理を待機中です。しばらくお待ちください。"
+    },
+    "incomplete_expired": {
+      "badge": "期限切れ",
+      "heading": "お支払いが期限切れです",
+      "description": "お支払いが期限切れです。お支払い方法を更新してください。"
+    },
+    "paused": {
+      "badge": "一時停止中",
+      "heading": "サブスクリプションは一時停止中です",
+      "description": "サブスクリプションは一時停止中です。いつでも再開できます。"
+    },
+    "succeeded": {
+      "badge": "成功",
+      "heading": "お支払いが完了しました",
+      "description": "お支払いが完了しました。ご登録ありがとうございます！"
+    },
+    "pending": {
+      "badge": "保留中",
+      "heading": "お支払いは保留中です",
+      "description": "お支払いは保留中です。しばらくお待ちください。"
+    },
+    "failed": {
+      "badge": "失敗",
+      "heading": "お支払いに失敗しました",
+      "description": "お支払いに失敗しました。お支払い方法を更新してください。"
+    }
+  }
+}

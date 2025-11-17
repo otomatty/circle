@@ -1,0 +1,58 @@
+/*
+* globals.css
+*
+* アプリケーション全体のグローバルスタイル
+* このファイルはアプリケーション全体に適用される基本的なスタイルを定義します。
+*
+* 主な機能：
+* - Tailwind CSSのインポート
+* - 他のスタイルシートの読み込み
+* - プラグインの設定
+* - コンテンツソースの定義
+* - バリアントの定義
+* - 基本的なスタイルのリセットと設定
+ */
+
+/* Tailwind CSS */
+@import 'tailwindcss';
+
+/* ローカルスタイル - 新しいスタイルを追加した場合は以下を更新してください */
+@import './shadcn-ui.css';
+@import './theme.css';
+@import './theme.utilities.css';
+@import './markdoc.css';
+@import './super-next-app.css';
+
+/* プラグイン - 新しいプラグインを追加した場合は以下を更新してください */
+@plugin "tailwindcss-animate";
+
+/* コンテンツソース - 新しいパスを追加した場合は以下を更新してください */
+@source "../../../packages/*/src/**/*.{ts,tsx}";
+@source "../../../packages/features/*/src/**/*.{ts,tsx}";
+@source "../../../packages/billing/*/src/**/*.{ts,tsx}";
+@source "../../../packages/plugins/*/src/**/*.{ts,tsx}";
+@source "../../../packages/cms/*/src/**/*.{ts,tsx}";
+@source "../{app,components,config,lib}/**/*.{ts,tsx}";
+
+/* バリアント - 新しいバリアントを追加した場合は以下を更新してください */
+@variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--border, currentColor);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-muted-foreground);
+  }
+}

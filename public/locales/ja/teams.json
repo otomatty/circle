@@ -1,0 +1,26 @@
+{
+  "title": "チーム",
+  "members": "メンバー",
+  "settings": "チーム設定",
+  "inviteMembers": "メンバーを招待",
+  "removeMember": "メンバーを削除",
+  "leaveTeam": "チームを退出",
+  "deleteTeam": "チームを削除",
+  "createTeam": "チームを作成",
+  "teamName": "チーム名",
+  "teamDescription": "チームの説明",
+  "role": "役割",
+  "roles": {
+    "owner": "オーナー",
+    "admin": "管理者",
+    "member": "メンバー"
+  },
+  "invitationSent": "招待を送信しました",
+  "invitationError": "招待の送信に失敗しました",
+  "memberRemoved": "メンバーを削除しました",
+  "memberRemoveError": "メンバーの削除に失敗しました",
+  "teamCreated": "チームを作成しました",
+  "teamCreateError": "チームの作成に失敗しました",
+  "teamDeleted": "チームを削除しました",
+  "teamDeleteError": "チームの削除に失敗しました"
+}

@@ -1,0 +1,115 @@
+/*
+* shadcn-ui.css
+*
+* Update the below to customize your Shadcn UI CSS Colors.
+* Refer to https://ui.shadcn.com/themes for applying new colors.
+ */
+
+@layer base {
+    :root {
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        --font-heading: var(--font-sans);
+
+        --background: hsl(68 50% 97%);
+        --foreground: hsl(136 31% 8%);
+        
+        --card: hsl(68 50% 99%);
+        --card-foreground: hsl(136 31% 8%);
+        
+        --popover: hsl(68 50% 99%);
+        --popover-foreground: hsl(136 31% 8%);
+        
+        --primary: hsl(136 31% 12%);
+        --primary-foreground: hsl(68 50% 95%);
+                
+        --secondary: hsl(68 50% 95%);
+        --secondary-foreground: hsl(136 31% 8%);
+        
+        --muted: hsl(68 50% 95%);
+        --muted-foreground: hsl(0 0% 45.1%);
+        
+        --accent: hsl(68 50% 95%);
+        --accent-foreground: hsl(136 31% 12%);
+        
+        --destructive: hsl(0 84.2% 60.2%);
+        --destructive-foreground: hsl(68 50% 95%);
+        
+        --border: hsl(0 0% 89.8%);
+        --input: hsl(0 0% 89.8%);
+        --ring: hsl(136 31% 14%);
+
+        --radius: 0.5rem;
+
+        --chart-1: hsl(12 76% 61%);
+        --chart-2: hsl(173 58% 39%);
+        --chart-3: hsl(197 37% 24%);
+        --chart-4: hsl(43 74% 66%);
+        --chart-5: hsl(27 87% 67%);
+
+        --sidebar-background: hsl(68 50% 95%);
+        --sidebar-foreground: hsl(240 5.3% 26.1%);
+        --sidebar-primary: hsl(240 5.9% 10%);
+        --sidebar-primary-foreground: hsl(68 50% 95%);
+        --sidebar-accent: hsl(240 4.8% 95.9%);
+        --sidebar-accent-foreground: hsl(240 5.9% 10%);
+        --sidebar-border: hsl(220 13% 91%);
+        --sidebar-ring: hsl(217.2 91.2% 59.8%);
+
+        --color-1: 0 100% 63%;
+        --color-2: 270 100% 63%;
+        --color-3: 210 100% 63%;
+        --color-4: 195 100% 63%;
+        --color-5: 90 100% 63%;
+    }
+
+    .dark {
+        --background: hsl(136 31% 8%);
+        --foreground: hsl(68 50% 97%);
+        
+        --card: hsl(136 31% 10%);
+        --card-foreground: hsl(68 50% 97%);
+        
+        --popover: hsl(136 31% 8%);
+        --popover-foreground: hsl(68 50% 97%);
+        
+        --primary: hsl(68 50% 97%);
+        --primary-foreground: hsl(136 31% 9%);
+        
+        --secondary: hsl(136 31% 9%);
+        --secondary-foreground: hsl(68 50% 97%);
+        
+        --muted: hsl(136 31% 9%);
+        --muted-foreground: hsl(0 0% 63.9%);
+        
+        --accent: hsl(136 31% 12%);
+        --accent-foreground: hsl(68 50% 97%);
+        
+        --destructive: hsl(0 62.8% 30.6%);
+        --destructive-foreground: hsl(68 50% 97%);
+        
+        --border: hsl(136 31% 12%);
+        --input: hsl(136 31% 15%);
+        --ring: hsl(0 0% 83.1%);
+
+        --chart-1: hsl(220 70% 50%);
+        --chart-2: hsl(160 60% 45%);
+        --chart-3: hsl(30 80% 55%);
+        --chart-4: hsl(280 65% 60%);
+        --chart-5: hsl(340 75% 55%);
+
+        --sidebar-background: hsl(136 31% 9%);
+        --sidebar-foreground: hsl(240 4.8% 95.9%);
+        --sidebar-primary: hsl(224.3 76.3% 48%);
+        --sidebar-primary-foreground: hsl(68 50% 95%);
+        --sidebar-accent: hsl(136 31% 12%);
+        --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+        --sidebar-border: hsl(136 31% 12%);
+        --sidebar-ring: hsl(217.2 91.2% 59.8%);
+
+        --color-1: 0 100% 63%;
+        --color-2: 270 100% 63%;
+        --color-3: 210 100% 63%;
+        --color-4: 195 100% 63%;
+        --color-5: 90 100% 63%;
+    }
+}

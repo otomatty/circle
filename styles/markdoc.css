@@ -1,0 +1,229 @@
+/*
+* markdoc.css
+*
+* Markdocコンテンツのスタイリング
+* このファイルはMarkdownコンテンツの表示スタイルを定義します。
+*
+* 主な機能：
+* - 見出し（h1-h6）のスタイリング
+* - 段落、リスト、引用のスタイリング
+* - コードブロックのシンタックスハイライト
+* - テーブルのレイアウト
+* - その他のMarkdown要素のスタイリング
+*/
+
+.markdoc {
+    @apply text-foreground;
+}
+
+/* 見出しスタイル */
+.markdoc h1 {
+    @apply mt-14 text-4xl font-semibold font-heading tracking-tight dark:text-white text-foreground;
+}
+
+.markdoc h2 {
+    @apply mb-6 mt-12 font-semibold text-2xl font-heading tracking-tight dark:text-white text-foreground;
+}
+
+.markdoc h3 {
+    @apply mt-12 text-xl font-semibold font-heading tracking-tight dark:text-white text-foreground;
+}
+
+.markdoc h4 {
+    @apply mt-8 text-lg font-medium tracking-tight dark:text-white text-foreground;
+}
+
+.markdoc h5 {
+    @apply mt-6 text-base font-medium tracking-tight dark:text-white text-foreground;
+}
+
+.markdoc h6 {
+    @apply mt-2 text-sm font-normal tracking-tight dark:text-white text-foreground;
+}
+
+/* 段落スタイル */
+.markdoc p {
+    @apply mb-6 mt-4 text-base leading-7 text-muted-foreground;
+}
+
+/* リストスタイル */
+.markdoc li {
+    @apply relative my-1.5 text-base leading-7 text-muted-foreground;
+}
+
+.markdoc ul > li:before {
+    content: '-';
+
+    @apply mr-2;
+}
+
+.markdoc ol > li:before {
+    @apply inline-flex font-medium text-muted-foreground;
+
+    content: counters(counts, '.') '. ';
+    font-feature-settings: 'tnum';
+}
+
+.markdoc b,
+.markdoc strong {
+    @apply font-semibold text-secondary-foreground dark:text-white;
+}
+
+.markdoc img,
+.markdoc video {
+    @apply rounded-md;
+}
+
+.markdoc ul,
+.markdoc ol {
+    @apply pl-1;
+}
+
+.markdoc ol > li {
+    counter-increment: counts;
+}
+
+.markdoc ol > li:before {
+    @apply mr-2 inline-flex font-semibold;
+
+    content: counters(counts, '.') '. ';
+    font-feature-settings: 'tnum';
+}
+
+/* コードブロックスタイル */
+.markdoc p > code, .markdoc li > code {
+    @apply p-0.5 text-sm font-semibold bg-muted/50 border font-mono text-secondary-foreground;
+}
+
+.markdoc pre {
+    @apply overflow-x-auto bg-muted/50 rounded-md border border-border p-4 text-sm font-mono text-foreground;
+}
+
+/* 引用スタイル */
+.markdoc blockquote {
+    @apply my-4 border-l-8 border border-primary px-6 py-4 text-lg font-medium text-muted-foreground;
+}
+
+/* リンクスタイル */
+.markdoc a {
+    @apply border-b-black border-b hover:border-b-2 pb-0.5 text-secondary-foreground font-semibold dark:border-yellow-300;
+}
+
+/* 水平線スタイル */
+.markdoc hr {
+    @apply mt-8 mb-6 border-border;
+}
+
+.markdoc [role='alert'] {
+    @apply py-4 m-0 my-8;
+}
+
+.markdoc [role='alert'] * {
+    color: inherit;
+    @apply m-0 p-0 text-sm;
+}
+
+.markdoc [role='alert'] h5 {
+    color: inherit;
+}
+
+/* タスクリストスタイル */
+.markdoc ul.task-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.markdoc .task-list-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.markdoc .task-list-item input[type="checkbox"] {
+    margin: 0;
+}
+
+/* 注釈スタイル */
+.markdoc .footnotes {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+    font-size: 0.9em;
+    color: var(--color-muted-foreground);
+}
+
+/* 目次スタイル */
+.markdoc .table-of-contents {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: var(--color-card);
+    border-radius: var(--radius-md);
+}
+
+.markdoc .table-of-contents ul {
+    list-style-type: none;
+    padding-left: 1rem;
+}
+
+.markdoc .table-of-contents li {
+    margin: 0.5rem 0;
+}
+
+/* アラート・警告スタイル */
+.markdoc .alert {
+    margin: 1rem 0;
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    border-left: 4px solid;
+}
+
+.markdoc .alert-info {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary-foreground);
+}
+
+.markdoc .alert-warning {
+    background-color: var(--color-destructive);
+    border-color: var(--color-destructive-foreground);
+}
+
+/* キーボードショートカットスタイル */
+.markdoc kbd {
+    padding: 0.2em 0.4em;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background-color: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 1px 0 var(--color-border);
+}
+
+/* 定義リストスタイル */
+.markdoc dl {
+    margin: 1rem 0;
+}
+
+.markdoc dt {
+    font-weight: 600;
+    margin-top: 1rem;
+}
+
+.markdoc dd {
+    margin-left: 2rem;
+    margin-top: 0.5rem;
+}
+
+/* アニメーション */
+.markdoc .animate-fade-in {
+    animation: fade-in 0.5s ease-out;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

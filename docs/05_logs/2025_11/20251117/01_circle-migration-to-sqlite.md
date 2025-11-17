@@ -139,10 +139,12 @@ CircleアプリケーションをMakerKit依存から独立させ、Supabaseか�
 - ✅ リンターエラーを修正（環境変数の設定が必要）
 
 #### 5.4 動作確認
-- [ ] 開発サーバー（`bun run dev`）を起動
-- [ ] 各ページが正常に表示されることを確認
-- [ ] データベースクエリが正常に動作することを確認
-- [ ] i18nが正常に動作することを確認
+- ✅ 開発サーバー（`bun run dev`）を起動
+- ✅ 各ページが正常に表示されることを確認
+- ✅ データベースクエリが正常に動作することを確認
+- ✅ i18nが正常に動作することを確認
+- ✅ 無限リダイレクトループの問題を修正（`app/page.tsx`と`app/[orgId]/page.tsx`）
+- ✅ 環境変数のデフォルト値を追加（`config/app.config.ts`）
 
 #### 5.5 残存する@kitパッケージの参照の修正
 以下のファイルで`@kit/ui`や`@kit/*`への参照を修正しました：
@@ -171,7 +173,8 @@ CircleアプリケーションをMakerKit依存から独立させ、Supabaseか�
 
 #### 5.6 データベースシードスクリプトの更新
 - ✅ `scripts/seed-database.ts`をSupabaseからSQLiteに変更
-- [ ] シードデータが正しく挿入されることを確認
+- ✅ シードデータの挿入順序を修正（プロジェクトをチームより先に挿入）
+- ✅ シードデータが正しく挿入されることを確認
 
 #### 5.7 その他の修正
 - ✅ `lib/server/gmail/service.ts`でSupabaseを使用している箇所を修正（一旦無効化）
@@ -186,6 +189,34 @@ CircleアプリケーションをMakerKit依存から独立させ、Supabaseか�
 - ✅ `.env.example`の作成（Supabase関連の環境変数を削除）
 - ✅ 移行計画書（`MIGRATION_PLAN.md`）の完了状況を更新
 
+#### 5.9 Server ActionsとClient Components間のデータフロー修正
+Server ActionsからClient ComponentsにReactコンポーネント（関数）を直接渡すことができない問題を修正しました。
+
+**問題:**
+- Server Actionsが`getIconFromString`を使用してReactコンポーネント（LucideIcon）を返していた
+- これにより「Functions cannot be passed directly to Client Components」エラーが発生
+
+**解決策:**
+1. **Server Actionsの修正**
+   - `actions/projects.ts`: iconを文字列として返すように変更
+   - `actions/priorities.ts`: iconを文字列として返すように変更
+   - `actions/status.ts`: iconを文字列として返すように変更
+   - `actions/teams.ts`: iconを文字列として返すように変更（projects内のiconも含む）
+
+2. **Client Componentsの修正**
+   - `app-sidebar-client.tsx`: Server Actionsから受け取った文字列のiconをLucideIconに変換してatomに設定
+   - 各コンポーネントでiconが文字列の場合は`getIconFromString`で変換してから使用
+
+**修正したコンポーネント:**
+- ✅ `components/layout/sidebar/priority-selector.tsx`
+- ✅ `components/common/issues/priority-selector.tsx`
+- ✅ `components/common/issues/status-selector.tsx`
+- ✅ `components/common/issues/project-badge.tsx`
+- ✅ `components/common/issues/group-issues.tsx`
+- ✅ `components/common/teams/projects-tooltip.tsx`
+- ✅ `components/layout/sidebar/create-new-issue/project-selector.tsx`
+- ✅ `components/layout/sidebar/create-new-issue/status-selector.tsx`
+
 ## 注意事項
 
 1. **データベースファイル**: SQLiteファイル（`database.sqlite`）は`.gitignore`に追加済みです
@@ -195,9 +226,52 @@ CircleアプリケーションをMakerKit依存から独立させ、Supabaseか�
 5. **Gmail機能**: `lib/server/gmail/service.ts`は一旦無効化されています。SQLiteスキーマにGmail関連テーブルを追加する必要があります
 6. **ビルド**: ビルドは成功しましたが、環境変数の設定が必要です。`.env.local`ファイルを作成し、`.env.example`を参考に設定してください
 
+## 完了した作業の詳細
+
+### Phase 5.9: Server ActionsとClient Components間のデータフロー修正
+
+**問題の詳細:**
+- Server ActionsがReactコンポーネント（LucideIcon）を返していたため、シリアライズエラーが発生
+- エラーメッセージ: "Functions cannot be passed directly to Client Components"
+
+**修正内容:**
+
+1. **Server Actionsの修正**
+   - `actions/projects.ts`: `getIconFromString`を削除し、iconを文字列として返す
+   - `actions/priorities.ts`: 同様にiconを文字列として返す
+   - `actions/status.ts`: 同様にiconを文字列として返す
+   - `actions/teams.ts`: 同様にiconを文字列として返す（projects内のiconも含む）
+
+2. **Client Componentsの修正**
+   - `app-sidebar-client.tsx`: 
+     - Server Actionsから受け取った文字列のiconを`getIconFromString`でLucideIconに変換
+     - teamsのprojects内のiconも同様に変換
+   - 各コンポーネントでiconを使用する際に、文字列の場合は変換してから使用
+
+**修正したファイル:**
+- `actions/projects.ts`
+- `actions/priorities.ts`
+- `actions/status.ts`
+- `actions/teams.ts`
+- `components/layout/sidebar/app-sidebar-client.tsx`
+- `components/layout/sidebar/priority-selector.tsx`
+- `components/common/issues/priority-selector.tsx`
+- `components/common/issues/status-selector.tsx`
+- `components/common/issues/project-badge.tsx`
+- `components/common/issues/group-issues.tsx`
+- `components/common/teams/projects-tooltip.tsx`
+- `components/layout/sidebar/create-new-issue/project-selector.tsx`
+- `components/layout/sidebar/create-new-issue/status-selector.tsx`
+
+**結果:**
+- ✅ Server ActionsからClient Componentsへのデータフローが正常に動作
+- ✅ アプリケーションが正常に表示されることを確認
+- ✅ `/core`にアクセスすると`/core/team/CORE/all`にリダイレクトされることを確認
+
 ## 参考資料
 
 - 移行計画書: `MIGRATION_PLAN.md`
+- 今後の実装プラン: `docs/03_plans/circle-application/20251117_01_next-steps.md`
 - SQLiteスキーマ: `lib/db/schema.sql`
 - SQLiteクライアント: `lib/db/client.ts`
 

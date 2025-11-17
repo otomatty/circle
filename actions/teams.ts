@@ -2,12 +2,12 @@
 
 import { getDatabase } from '~/lib/db/client';
 import type { Team } from '~/types/teams';
-import { getIconFromString } from '~/utils/icon-utils';
 
 /**
  * チームの一覧とそれに紐づくプロジェクトを取得します
+ * Server Actionsではシリアライズ可能なデータのみを返すため、iconは文字列として返します
  */
-export async function getTeams(): Promise<Team[]> {
+export async function getTeams(): Promise<Array<Omit<Team, 'projects'> & { projects: Array<Omit<Team['projects'][0], 'icon'> & { icon: string }> }>> {
   const db = getDatabase();
 
   try {
@@ -47,11 +47,11 @@ export async function getTeams(): Promise<Team[]> {
         percent_complete: number | null;
       }>;
 
-      // プロジェクトデータを整形
+      // プロジェクトデータを整形（iconは文字列のまま返す）
       const projects = projectsData.map((projectData) => ({
         id: projectData.id,
         name: projectData.name,
-        icon: getIconFromString(projectData.icon ?? 'folder'),
+        icon: projectData.icon ?? 'folder', // 文字列として返す
         percentComplete: projectData.percent_complete || 0,
         status: projectData.status_id ? { id: projectData.status_id } : null,
       }));
@@ -65,7 +65,7 @@ export async function getTeams(): Promise<Team[]> {
       };
     });
 
-    return teams as Team[];
+    return teams;
   } catch (error) {
     console.error('Teams取得エラー:', error);
     throw new Error('チームデータの取得に失敗しました');

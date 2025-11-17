@@ -15,6 +15,7 @@ import { Box, CheckIcon, FolderIcon } from 'lucide-react';
 import { useEffect, useId, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { projectCountsAtom, projectsAtom } from '~/store/project-atoms';
+import { getIconFromString } from '~/utils/icon-utils';
 
 /**
  * プロジェクトセレクターコンポーネント
@@ -68,7 +69,10 @@ export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
               (() => {
                 const selectedProject = projects.find((p) => p.id === value);
                 if (selectedProject) {
-                  const Icon = selectedProject.icon;
+                  const Icon =
+                    typeof selectedProject.icon === 'string'
+                      ? getIconFromString(selectedProject.icon)
+                      : selectedProject.icon;
                   return <Icon className="size-4" />;
                 }
                 return <Box className="size-4" />;
@@ -116,7 +120,13 @@ export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
                     className="flex items-center justify-between"
                   >
                     <div className="flex items-center gap-2">
-                      <project.icon className="size-4" />
+                      {(() => {
+                        const Icon =
+                          typeof project.icon === 'string'
+                            ? getIconFromString(project.icon)
+                            : project.icon;
+                        return <Icon className="size-4" />;
+                      })()}
                       {project.name}
                     </div>
                     {value === project.id && (

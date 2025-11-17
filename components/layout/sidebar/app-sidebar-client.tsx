@@ -58,7 +58,7 @@ interface NavItem {
 }
 
 interface AppSidebarClientProps extends React.ComponentProps<typeof Sidebar> {
-  teams: Team[];
+  teams: Array<Omit<Team, 'projects'> & { projects: Array<Omit<Team['projects'][0], 'icon'> & { icon: string }> }>;
   priorities: Array<Omit<Priority, 'icon'> & { icon: string }>;
   statuses: Array<Omit<Status, 'icon'> & { icon: string }>;
   projects: Array<Omit<Project, 'icon'> & { icon: string }>;
@@ -113,7 +113,16 @@ export function AppSidebarClient({
     setLabels(labels);
     setUsers(users);
     setPriorities(prioritiesWithIcons);
-    setTeams(teams);
+    
+    // teamsのprojects内のiconも変換
+    const teamsWithIcons: Team[] = teams.map((team) => ({
+      ...team,
+      projects: team.projects.map((project) => ({
+        ...project,
+        icon: getIconFromString(project.icon),
+      })),
+    }));
+    setTeams(teamsWithIcons);
   }, [
     statuses,
     projects,

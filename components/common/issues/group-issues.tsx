@@ -15,6 +15,7 @@ import { IssueLine } from './issue-line';
 import { openCreateIssueModalAtom } from '~/store/create-issue-store';
 import { sortIssuesByPriority } from '~/utils/issue-utils';
 import { AnimatePresence, motion } from 'framer-motion';
+import { getIconFromString } from '~/utils/icon-utils';
 
 /**
  * 課題グループコンポーネント
@@ -61,7 +62,13 @@ export function GroupIssues({ status, issues, count }: GroupIssuesProps) {
           }}
         >
           <div className="flex items-center gap-2">
-            <status.icon />
+            {(() => {
+              const Icon =
+                typeof status.icon === 'string'
+                  ? getIconFromString(status.icon)
+                  : status.icon;
+              return <Icon />;
+            })()}
             <span className="text-sm font-medium">{status.name}</span>
             <span className="text-sm text-muted-foreground">{count}</span>
           </div>

@@ -1,5 +1,5 @@
 'use client';
-import { Avatar, AvatarFallback, AvatarImage } from '@kit/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,7 +7,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@kit/ui/dropdown-menu';
+} from '~/components/ui/dropdown-menu';
 import type { User } from '~/types/users';
 import { statusUserColors } from '~/data/status';
 import { usersAtom } from '~/store/user-atoms';

@@ -5,7 +5,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@kit/ui/tooltip';
+} from '~/components/ui/tooltip';
 import type { Project } from '~/types/projects';
 import { Box } from 'lucide-react';
 

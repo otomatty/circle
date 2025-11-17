@@ -2,9 +2,8 @@ import Link from 'next/link';
 
 import { ArrowLeft } from 'lucide-react';
 
-import { getSupabaseServerClient } from '@kit/supabase/server-client';
-import { Button } from '@kit/ui/button';
-import { Heading } from '@kit/ui/heading';
+import { Button } from '~/components/ui/button';
+import { Heading } from '~/components/ui/heading';
 
 import { withI18n } from '~/lib/i18n/with-i18n';
 
@@ -17,12 +16,6 @@ export const generateMetadata = async () => {
 };
 
 const NotFoundPage = async () => {
-  const client = getSupabaseServerClient();
-
-  const {
-    data: { user },
-  } = await client.auth.getUser();
-
   return (
     <div className={'flex h-screen flex-1 flex-col'}>
       <div

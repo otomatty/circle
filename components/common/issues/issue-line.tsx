@@ -7,7 +7,7 @@ import { LabelBadge } from './label-badge';
 import { PrioritySelector } from './priority-selector';
 import { ProjectBadge } from './project-badge';
 import { StatusSelector } from './status-selector';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 
 /**
  * 課題リスト行コンポーネント

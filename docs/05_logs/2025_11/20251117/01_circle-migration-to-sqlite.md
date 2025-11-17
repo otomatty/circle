@@ -125,18 +125,18 @@ CircleアプリケーションをMakerKit依存から独立させ、Supabaseか�
 ### Phase 5: テストと動作確認
 
 #### 5.1 依存関係のインストール
-- [ ] `bun install`を実行して新しい依存関係をインストール
-- [ ] インストールエラーの確認と修正
+- ✅ `bun install`を実行して新しい依存関係をインストール
+- ✅ インストールエラーの確認と修正（better-sqlite3の再インストール）
 
 #### 5.2 データベースの初期化
-- [ ] `bun run db:init`を実行してデータベースを初期化
-- [ ] スキーマが正しく適用されることを確認
-- [ ] データベースファイル（`database.sqlite`）が作成されることを確認
+- ✅ `bun run db:init`を実行してデータベースを初期化（bunx tsxを使用）
+- ✅ スキーマが正しく適用されることを確認
+- ✅ データベースファイル（`database.sqlite`）が作成されることを確認
 
 #### 5.3 ビルドの確認
-- [ ] `bun run build`を実行してビルドエラーを確認
-- [ ] TypeScriptの型エラーを修正
-- [ ] リンターエラーを修正
+- ✅ `bun run build`を実行してビルドエラーを確認
+- ✅ TypeScriptの型エラーを修正
+- ✅ リンターエラーを修正（環境変数の設定が必要）
 
 #### 5.4 動作確認
 - [ ] 開発サーバー（`bun run dev`）を起動
@@ -145,38 +145,55 @@ CircleアプリケーションをMakerKit依存から独立させ、Supabaseか�
 - [ ] i18nが正常に動作することを確認
 
 #### 5.5 残存する@kitパッケージの参照の修正
-以下のファイルで`@kit/ui`や`@kit/*`への参照が残っている可能性があります：
+以下のファイルで`@kit/ui`や`@kit/*`への参照を修正しました：
 
-- [ ] `components/layout/sidebar/`配下のファイル
-- [ ] `components/personal-account-dropdown-container.tsx`
-- [ ] その他のコンポーネントファイル
+- ✅ `components/layout/sidebar/`配下のファイル
+- ✅ `components/personal-account-dropdown-container.tsx` - 削除
+- ✅ その他のコンポーネントファイル
 
-これらを確認し、必要に応じて以下に置き換えます：
-- `@kit/ui/button` → `shadcn/ui`のButtonコンポーネント
-- `@kit/ui/dropdown-menu` → `shadcn/ui`のDropdownMenuコンポーネント
-- `@kit/ui/sidebar` → `shadcn/ui`のSidebarコンポーネント
-- `@kit/ui/collapsible` → `shadcn/ui`のCollapsibleコンポーネント
+以下のコンポーネントをshadcn/uiに置き換えました：
+- ✅ `@kit/ui/button` → `shadcn/ui`のButtonコンポーネント
+- ✅ `@kit/ui/dropdown-menu` → `shadcn/ui`のDropdownMenuコンポーネント
+- ✅ `@kit/ui/sidebar` → `shadcn/ui`のSidebarコンポーネント
+- ✅ `@kit/ui/collapsible` → `shadcn/ui`のCollapsibleコンポーネント
+- ✅ `@kit/ui/popover` → `shadcn/ui`のPopoverコンポーネント
+- ✅ `@kit/ui/command` → `shadcn/ui`のCommandコンポーネント
+- ✅ `@kit/ui/input` → `shadcn/ui`のInputコンポーネント
+- ✅ `@kit/ui/checkbox` → `shadcn/ui`のCheckboxコンポーネント
+- ✅ `@kit/ui/textarea` → `shadcn/ui`のTextareaコンポーネント
+- ✅ `@kit/ui/switch` → `shadcn/ui`のSwitchコンポーネント
+- ✅ `@kit/ui/label` → `shadcn/ui`のLabelコンポーネント
+- ✅ `@kit/ui/heading` → カスタムHeadingコンポーネント
+- ✅ `@kit/ui/badge` → `shadcn/ui`のBadgeコンポーネント
+- ✅ `@kit/ui/avatar` → `shadcn/ui`のAvatarコンポーネント
+- ✅ `@kit/ui/tooltip` → `shadcn/ui`のTooltipコンポーネント
+- ✅ `@kit/ui/navigation-schema` → カスタム実装
 
 #### 5.6 データベースシードスクリプトの更新
-- [ ] `scripts/seed-database.ts`をSupabaseからSQLiteに変更
+- ✅ `scripts/seed-database.ts`をSupabaseからSQLiteに変更
 - [ ] シードデータが正しく挿入されることを確認
 
 #### 5.7 その他の修正
-- [ ] `lib/server/gmail/`配下のファイルでSupabaseを使用している箇所を確認・修正
-- [ ] `store/auth.ts`などの認証関連ストアの削除または修正
-- [ ] 認証関連の設定ファイル（`config/auth.config.ts`）の確認・修正
+- ✅ `lib/server/gmail/service.ts`でSupabaseを使用している箇所を修正（一旦無効化）
+- ✅ `components/personal-account-dropdown-container.tsx`を削除
+- ✅ `config/auth.config.ts`を削除
+- ✅ `app/[orgId]/page.tsx`からSupabase参照を削除し、SQLiteクエリに置き換え
+- ✅ `app/not-found.tsx`からSupabase参照を削除
+- ✅ `motion/react`を`framer-motion`に置き換え
 
 #### 5.8 ドキュメントの更新
-- [ ] `README.md`の更新（依存関係、セットアップ手順など）
-- [ ] `.env.example`の作成（Supabase関連の環境変数を削除）
-- [ ] 移行計画書（`MIGRATION_PLAN.md`）の完了状況を更新
+- ✅ `README.md`の更新（依存関係、セットアップ手順など）
+- ✅ `.env.example`の作成（Supabase関連の環境変数を削除）
+- ✅ 移行計画書（`MIGRATION_PLAN.md`）の完了状況を更新
 
 ## 注意事項
 
-1. **データベースファイル**: SQLiteファイル（`database.sqlite`）は`.gitignore`に追加する必要があります
-2. **環境変数**: Supabase関連の環境変数（`NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`など）は不要になりました
+1. **データベースファイル**: SQLiteファイル（`database.sqlite`）は`.gitignore`に追加済みです
+2. **環境変数**: Supabase関連の環境変数（`NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`など）は不要になりました。`.env.example`を参照してください
 3. **認証**: すべての認証機能が削除されたため、アプリケーションは誰でもアクセス可能です
-4. **型定義**: 一部の型定義で`@kit/supabase/circle-database`への参照が残っている可能性があるため、コードベース全体を確認する必要があります
+4. **データベーススクリプト**: `bun run db:init`と`bun run seed:database`は`bunx tsx`を使用して実行されます（better-sqlite3のネイティブモジュール対応のため）
+5. **Gmail機能**: `lib/server/gmail/service.ts`は一旦無効化されています。SQLiteスキーマにGmail関連テーブルを追加する必要があります
+6. **ビルド**: ビルドは成功しましたが、環境変数の設定が必要です。`.env.local`ファイルを作成し、`.env.example`を参考に設定してください
 
 ## 参考資料
 

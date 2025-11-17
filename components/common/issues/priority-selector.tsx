@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@kit/ui/button';
+import { Button } from '~/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -8,8 +8,8 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@kit/ui/command';
-import { Popover, PopoverContent, PopoverTrigger } from '@kit/ui/popover';
+} from '~/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { updateIssuePriorityAtom } from '~/store/issues-store';
 import type { Priority } from '~/types/priorities';

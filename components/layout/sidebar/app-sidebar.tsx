@@ -6,7 +6,7 @@ import {
   UserRound,
 } from 'lucide-react';
 import type * as React from 'react';
-import type { Sidebar } from '@kit/ui/sidebar';
+import type { Sidebar } from '~/components/ui/sidebar';
 
 import { getTeams } from '~/actions/teams';
 import { getPriorities } from '~/actions/priorities';

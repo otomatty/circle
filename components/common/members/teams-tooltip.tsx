@@ -1,4 +1,4 @@
-import { Tooltip, TooltipContent, TooltipTrigger } from '@kit/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip';
 import { ContactRound } from 'lucide-react';
 import { useAtomValue } from 'jotai';
 import { teamsAtom } from '~/store/team-atoms';

@@ -7,14 +7,33 @@
  */
 
 import { Home, User } from 'lucide-react';
-import type { z } from 'zod';
-
-import { NavigationConfigSchema } from '@kit/ui/navigation-schema';
+import { z } from 'zod';
 
 import pathsConfig from './paths.config';
 
 // アイコンのサイズを統一するためのクラス
 const iconClasses = 'w-4';
+
+/**
+ * ナビゲーション設定のスキーマ定義
+ */
+const NavigationConfigSchema = z.object({
+  routes: z.array(
+    z.object({
+      label: z.string(),
+      children: z.array(
+        z.object({
+          label: z.string(),
+          path: z.string(),
+          Icon: z.any().optional(),
+          end: z.boolean().optional(),
+        })
+      ),
+    })
+  ),
+  style: z.string().optional(),
+  sidebarCollapsed: z.string().optional(),
+});
 
 /**
  * ナビゲーションルートの定義

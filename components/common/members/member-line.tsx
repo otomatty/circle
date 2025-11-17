@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@kit/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { format } from 'date-fns';
 import type { User } from '~/types/users';
 import { statusUserColors } from '~/data/status';

@@ -1,9 +1,9 @@
 'use client';
 
 import { Bell } from 'lucide-react';
-import { Button } from '@kit/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@kit/ui/popover';
-import { Checkbox } from '@kit/ui/checkbox';
+import { Button } from '~/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
+import { Checkbox } from '~/components/ui/checkbox';
 import { useState } from 'react';
 import { Slack } from 'lucide-react';
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@kit/ui/button';
+import { Button } from '~/components/ui/button';
 import { ListFilter } from 'lucide-react';
 
 /**

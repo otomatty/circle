@@ -2,7 +2,7 @@
 
 import type { Issue } from '~/types/issues';
 import { format } from 'date-fns';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 import {
   type DragSourceMonitor,

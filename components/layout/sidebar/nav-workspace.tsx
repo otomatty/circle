@@ -9,14 +9,14 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@kit/ui/dropdown-menu';
+} from '~/components/ui/dropdown-menu';
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@kit/ui/sidebar';
+} from '~/components/ui/sidebar';
 import { Presentation } from 'lucide-react';
 import Link from 'next/link';
 

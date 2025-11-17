@@ -18,13 +18,13 @@ import { NavInbox } from '~/components/layout/sidebar/nav-inbox';
 import { NavTeams } from '~/components/layout/sidebar/nav-teams';
 import { NavWorkspace } from '~/components/layout/sidebar/nav-workspace';
 import { OrgSwitcher } from '~/components/layout/sidebar/org-switcher';
-import { Button } from '@kit/ui/button';
+import { Button } from '~/components/ui/button';
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-} from '@kit/ui/sidebar';
+} from '~/components/ui/sidebar';
 import type { Priority } from '~/types/priorities';
 import type { Team } from '~/types/teams';
 import type { Status } from '~/types/status';

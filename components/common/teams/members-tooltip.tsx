@@ -1,12 +1,12 @@
 'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@kit/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@kit/ui/tooltip';
+} from '~/components/ui/tooltip';
 import type { User } from '~/types/users';
 
 interface MembersTooltipProps {

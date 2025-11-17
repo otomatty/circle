@@ -5,16 +5,16 @@ import type { Status } from '~/types/status';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { viewTypeAtom } from '~/store/view-store';
 import { updateIssueStatusAtom } from '~/store/issues-store';
-import { cn } from '@kit/ui/utils';
+import { cn } from '~/lib/utils/cn';
 import { Plus } from 'lucide-react';
 import { type FC, useRef } from 'react';
 import { useDrop } from 'react-dnd';
-import { Button } from '@kit/ui/button';
+import { Button } from '~/components/ui/button';
 import { IssueDragType, IssueGrid } from './issue-grid';
 import { IssueLine } from './issue-line';
 import { openCreateIssueModalAtom } from '~/store/create-issue-store';
 import { sortIssuesByPriority } from '~/utils/issue-utils';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 /**
  * 課題グループコンポーネント

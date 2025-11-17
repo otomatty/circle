@@ -1,5 +1,5 @@
 import { AppSidebar } from '~/components/layout/sidebar/app-sidebar';
-import { SidebarProvider } from '@kit/ui/sidebar';
+import { SidebarProvider } from '~/components/ui/sidebar';
 import { CreateIssueModalProvider } from '~/components/common/issues/create-issue-modal-provider';
 
 interface MainLayoutProps {

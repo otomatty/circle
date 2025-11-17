@@ -1,13 +1,13 @@
 'use client';
 
-import { Button } from '@kit/ui/button';
+import { Button } from '~/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@kit/ui/dropdown-menu';
-import { cn } from '@kit/ui/utils';
+} from '~/components/ui/dropdown-menu';
+import { cn } from '~/lib/utils/cn';
 import { useAtomValue, useSetAtom } from 'jotai';
 import {
   viewTypeAtom,

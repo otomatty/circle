@@ -1,8 +1,8 @@
 'use client';
 
-import { Button } from '@kit/ui/button';
-import { Input } from '@kit/ui/input';
-import { SidebarTrigger } from '@kit/ui/sidebar';
+import { Button } from '~/components/ui/button';
+import { Input } from '~/components/ui/input';
+import { SidebarTrigger } from '~/components/ui/sidebar';
 import { useAtomValue, useSetAtom } from 'jotai';
 import {
   isSearchOpenAtom,

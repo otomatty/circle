@@ -1,16 +1,16 @@
-import { Button } from '@kit/ui/button';
+import { Button } from '~/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@kit/ui/dialog';
-import { Input } from '@kit/ui/input';
-import { Textarea } from '@kit/ui/textarea';
+} from '~/components/ui/dialog';
+import { Input } from '~/components/ui/input';
+import { Textarea } from '~/components/ui/textarea';
 import { Heart } from 'lucide-react';
-import { Switch } from '@kit/ui/switch';
-import { Label } from '@kit/ui/label';
+import { Switch } from '~/components/ui/switch';
+import { Label } from '~/components/ui/label';
 import { Edit } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import type { Issue } from '~/types/issues';

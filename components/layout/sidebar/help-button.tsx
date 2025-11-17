@@ -10,9 +10,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@kit/ui/dropdown-menu';
-import { Button } from '@kit/ui/button';
-import { Input } from '@kit/ui/input';
+} from '~/components/ui/dropdown-menu';
+import { Button } from '~/components/ui/button';
+import { Input } from '~/components/ui/input';
 import Link from 'next/link';
 import { Box, Linkedin, Twitter, MessageCircle } from 'lucide-react';
 

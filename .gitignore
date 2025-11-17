@@ -56,6 +56,12 @@ Thumbs.db
 *.tsbuildinfo
 next-env.d.ts
 
+# Database
+database.sqlite
+*.sqlite
+*.sqlite3
+*.db
+
 # Supabase
 .supabase/
 supabase/.branches/

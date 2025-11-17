@@ -1,4 +1,4 @@
-import { Badge } from '@kit/ui/badge';
+import { Badge } from '~/components/ui/badge';
 import type { LabelInterface } from '~/types/labels';
 
 /**

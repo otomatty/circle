@@ -1,7 +1,7 @@
 'use client';
 
-import { Button } from '@kit/ui/button';
-import { SidebarTrigger } from '@kit/ui/sidebar';
+import { Button } from '~/components/ui/button';
+import { SidebarTrigger } from '~/components/ui/sidebar';
 import { useAtomValue } from 'jotai';
 import { usersAtom } from '~/store/user-atoms';
 import { Plus } from 'lucide-react';

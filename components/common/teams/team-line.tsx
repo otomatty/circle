@@ -2,7 +2,7 @@ import type { Team } from '~/types/teams';
 import { MembersTooltip } from './members-tooltip';
 import { ProjectsTooltip } from './projects-tooltip';
 import { Check } from 'lucide-react';
-import { Button } from '@kit/ui/button';
+import { Button } from '~/components/ui/button';
 
 interface TeamLineProps {
   team: Team;

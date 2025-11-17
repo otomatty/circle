@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@kit/ui/button';
+import { Button } from '~/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -8,14 +8,14 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@kit/ui/command';
-import { Popover, PopoverContent, PopoverTrigger } from '@kit/ui/popover';
+} from '~/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover';
 import { useAtomValue } from 'jotai';
 import { labelCountsAtom, labelsAtom } from '~/store/label-atoms';
 import type { LabelInterface } from '~/types/labels';
 import { CheckIcon, TagIcon } from 'lucide-react';
 import { useId, useState } from 'react';
-import { cn } from '@kit/ui/utils';
+import { cn } from '~/lib/utils/cn';
 
 /**
  * ラベルセレクターコンポーネント

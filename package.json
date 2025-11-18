@@ -22,7 +22,8 @@
     "seed:database": "bunx tsx scripts/seed-database.ts",
     "db:migrate": "bunx tsx scripts/migrate.ts",
     "db:migrate:status": "bunx tsx scripts/migrate.ts status",
-    "db:migrate:rollback": "bunx tsx scripts/migrate.ts rollback"
+    "db:migrate:rollback": "bunx tsx scripts/migrate.ts rollback",
+    "setup:git-hooks": "bash scripts/setup-git-hooks.sh"
   },
   "dependencies": {
     "@edge-csrf/nextjs": "2.5.3-cloudflare-rc1",

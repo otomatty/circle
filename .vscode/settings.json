@@ -1,0 +1,17 @@
+{
+  "git.enableSmartCommit": true,
+  "git.confirmSync": true,
+  "git.autofetch": true,
+  "git.branchProtection": [
+    "main",
+    "develop"
+  ],
+  "git.branchProtectionPrompt": "alwaysPrompt",
+  "git.allowForcePush": false,
+  "git.showPushSuccessNotification": true,
+  "git.enableStatusBarSync": true,
+  "files.exclude": {
+    "**/.git": false
+  }
+}
+

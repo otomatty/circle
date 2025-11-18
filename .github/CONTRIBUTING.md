@@ -47,15 +47,30 @@
 
 3. **緊急修正（hotfix）**
    ```bash
-   # mainブランチからhotfixブランチを作成
-   git checkout main
-   git pull origin main
+   # developブランチからhotfixブランチを作成
+   git checkout develop
+   git pull origin develop
    git checkout -b hotfix/your-hotfix-name
    
    # 修正を行う
    # ...
    
-   # mainブランチにPRを作成（承認後、developにもマージ）
+   # developブランチにPRを作成（承認後、mainへリリース）
+   git push origin hotfix/your-hotfix-name
+   ```
+   
+   **hotfix後の手順:**
+   ```bash
+   # developブランチへのPRがマージされた後
+   # GitHub上でdevelop → mainのPRを作成してリリース
+   
+   # または、ローカルでmainブランチにマージする場合
+   git checkout main
+   git pull origin main
+   git merge develop
+   git push origin main
+   
+   # その後、developブランチも最新の状態に保つ（通常は自動的に同期される）
    ```
 
 ### PR作成時の注意事項

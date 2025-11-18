@@ -1,0 +1,44 @@
+name: Branch Protection Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches:
+      - main
+      - develop
+
+jobs:
+  check-branch-protection:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check PR base branch for main
+        if: github.event.pull_request.base.ref == 'main'
+        run: |
+          HEAD_REF="${{ github.event.pull_request.head.ref }}"
+          if [ "$HEAD_REF" != "develop" ]; then
+            echo "::error::PRs to main branch must be from develop branch"
+            echo "Current branch: $HEAD_REF"
+            echo "Please create a PR from develop branch instead."
+            exit 1
+          fi
+          echo "✅ PR is from develop branch, proceeding..."
+
+      - name: Validate PR requirements
+        run: |
+          echo "PR Base: ${{ github.event.pull_request.base.ref }}"
+          echo "PR Head: ${{ github.event.pull_request.head.ref }}"
+          echo "PR Title: ${{ github.event.pull_request.title }}"
+          echo "PR Body: ${{ github.event.pull_request.body }}"
+          
+          # PRのタイトルと本文が空でないことを確認
+          if [ -z "${{ github.event.pull_request.title }}" ]; then
+            echo "::warning::PR title is empty"
+          fi
+          
+          if [ -z "${{ github.event.pull_request.body }}" ]; then
+            echo "::warning::PR body is empty. Please add a description."
+          fi
+

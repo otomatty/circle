@@ -31,7 +31,7 @@ lerna-debug.log*
 Thumbs.db
 
 # Debug
-.vscode/
+# .vscode/ - Keep VSCode settings in repository
 .idea/
 *.swp
 *.swo

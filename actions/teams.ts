@@ -13,61 +13,88 @@ export async function getTeams(): Promise<Array<Omit<Team, 'projects'> & { proje
     async () => {
       const db = getDatabase();
 
-      // チームの基本情報を取得
-      const teamsData = db
-        .prepare('SELECT * FROM teams')
-        .all() as Array<{
-        id: string;
-        slug: string;
-        name: string;
-        icon: string | null;
-        color: string | null;
-      }>;
-
-      // チームごとのプロジェクト情報を取得
-      const teams = teamsData.map((team) => {
-        // チームに関連するプロジェクトを取得
-        const projectsData = db
+      // チームとプロジェクトを一度のJOINクエリで取得（N+1問題を解決）
+      const teamsWithProjects = db
           .prepare(
             `
           SELECT 
-            p.id,
-            p.name,
-            p.icon,
-            p.status_id,
-            p.percent_complete
-          FROM team_projects tp
-          INNER JOIN projects p ON tp.project_id = p.id
-          WHERE tp.team_id = ?
-        `
-          )
-          .all(team.id) as Array<{
+          t.id as team_id,
+          t.slug as team_slug,
+          t.name as team_name,
+          t.icon as team_icon,
+          t.color as team_color,
+          p.id as project_id,
+          p.name as project_name,
+          p.icon as project_icon,
+          p.status_id as project_status_id,
+          p.percent_complete as project_percent_complete
+        FROM teams t
+        LEFT JOIN team_projects tp ON t.id = tp.team_id
+        LEFT JOIN projects p ON tp.project_id = p.id
+        ORDER BY t.id, p.id
+      `
+        )
+        .all() as Array<{
+        team_id: string;
+        team_slug: string;
+        team_name: string;
+        team_icon: string | null;
+        team_color: string | null;
+        project_id: string | null;
+        project_name: string | null;
+        project_icon: string | null;
+        project_status_id: string | null;
+        project_percent_complete: number | null;
+      }>;
+
+      // データをチームごとにグループ化
+      const teamsMap = new Map<
+        string,
+        {
           id: string;
           name: string;
           icon: string | null;
-          status_id: string | null;
-          percent_complete: number | null;
+          color: string | null;
+          projects: Array<{
+            id: string;
+            name: string;
+            icon: string;
+            percentComplete: number;
+            status: { id: string } | null;
         }>;
+        }
+      >();
 
-        // プロジェクトデータを整形（iconは文字列のまま返す）
-        const projects = projectsData.map((projectData) => ({
-          id: projectData.id,
-          name: projectData.name,
-          icon: projectData.icon ?? 'folder', // 文字列として返す
-          percentComplete: projectData.percent_complete || 0,
-          status: projectData.status_id ? { id: projectData.status_id } : null,
-        }));
+      for (const row of teamsWithProjects) {
+        if (!teamsMap.has(row.team_id)) {
+          teamsMap.set(row.team_id, {
+            id: row.team_slug,
+            name: row.team_name,
+            icon: row.team_icon,
+            color: row.team_color,
+            projects: [],
+          });
+        }
 
-        return {
-          id: team.slug,
-          name: team.name,
-          icon: team.icon,
-          projects,
+        const team = teamsMap.get(row.team_id)!;
+
+        // プロジェクトが存在する場合のみ追加
+        if (row.project_id) {
+          team.projects.push({
+            id: row.project_id,
+            name: row.project_name!,
+            icon: row.project_icon ?? 'folder',
+            percentComplete: row.project_percent_complete || 0,
+            status: row.project_status_id ? { id: row.project_status_id } : null,
+          });
+        }
+      }
+
+      // Mapから配列に変換し、joinedプロパティを追加
+      return Array.from(teamsMap.values()).map((team) => ({
+        ...team,
           joined: true, // デフォルトはtrueとする
-        };
-      });
-
-      return teams;
+      }));
     },
     {
       actionName: 'getTeams',

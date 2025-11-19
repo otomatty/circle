@@ -16,11 +16,13 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./app/*"],
+      "~/*": ["./*"],
       "~/config/*": ["./config/*"],
       "~/components/*": ["./components/*"],
       "~/types/*": ["./types/*"],
       "~/lib/*": ["./lib/*"],
+      "~/lib/test-utils": ["./lib/test-utils/index"],
+      "~/lib/test-utils/*": ["./lib/test-utils/*"],
       "~/actions/*": ["./actions/*"],
       "~/services/*": ["./services/*"],
       "~/hooks/*": ["./hooks/*"],
@@ -44,6 +46,8 @@
     "./config/**/*.ts",
     "components/**/*",
     "lib/**/*.ts",
+    "actions/**/*.ts",
+    "utils/**/*.ts",
     "app"
   ],
   "exclude": ["node_modules", ".next"]

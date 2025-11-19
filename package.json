@@ -23,7 +23,11 @@
     "db:migrate": "bunx tsx scripts/migrate.ts",
     "db:migrate:status": "bunx tsx scripts/migrate.ts status",
     "db:migrate:rollback": "bunx tsx scripts/migrate.ts rollback",
-    "setup:git-hooks": "bash scripts/setup-git-hooks.sh"
+    "setup:git-hooks": "bash scripts/setup-git-hooks.sh",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@edge-csrf/nextjs": "2.5.3-cloudflare-rc1",
@@ -84,19 +88,26 @@
     "@svgr/core": "8.1.0",
     "@svgr/rollup": "8.1.0",
     "@tailwindcss/postcss": "4.0.14",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/better-sqlite3": "^7.6.12",
     "@types/canvas-confetti": "1.9.0",
     "@types/mdx": "2.0.13",
     "@types/node": "22.13.10",
     "@types/react": "19.0.11",
     "@types/react-dom": "19.0.4",
+    "@vitest/coverage-v8": "^4.0.10",
+    "@vitest/ui": "^4.0.10",
     "autoprefixer": "10.4.21",
     "babel-plugin-react-compiler": "19.0.0-beta-3229e95-20250315",
     "dotenv-cli": "8.0.0",
+    "jsdom": "^27.2.0",
     "pino-pretty": "13.0.0",
     "tailwindcss": "4.0.14",
     "tailwindcss-animate": "1.0.7",
-    "typescript": "5.8.2"
+    "typescript": "5.8.2",
+    "vitest": "^4.0.10"
   },
   "browserslist": ["last 1 versions", "> 0.7%", "not dead"]
 }

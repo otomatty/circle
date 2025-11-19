@@ -5,12 +5,16 @@ import { statusesAtom } from '~/store/status-atoms';
 import { issuesByStatusAtom } from '~/store/issues-store';
 import { viewTypeAtom } from '~/store/view-store';
 import type { FC } from 'react';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { GroupIssues } from './group-issues';
 import { SearchIssues } from './search-issues';
 import { CustomDragLayer } from './issue-grid';
 import { cn } from '~/lib/utils/cn';
+
+// react-dndを動的インポート（バンドルサイズ削減）
+const DndProvider = lazy(() =>
+  import('react-dnd').then((mod) => ({ default: mod.DndProvider }))
+);
 
 /**
  * 全課題表示コンポーネント
@@ -59,7 +63,8 @@ const GroupIssuesListView: FC<{
   const statuses = useAtomValue(statusesAtom);
 
   return (
-    <DndProvider backend={HTML5Backend}>
+    <Suspense fallback={<div>Loading...</div>}>
+      <DndProviderWrapper>
       <CustomDragLayer />
       <div
         className={cn(
@@ -79,6 +84,29 @@ const GroupIssuesListView: FC<{
           );
         })}
       </div>
-    </DndProvider>
+      </DndProviderWrapper>
+    </Suspense>
   );
+};
+
+/**
+ * DndProviderのラッパーコンポーネント
+ * HTML5Backendを動的に読み込む
+ */
+const DndProviderWrapper: FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [backend, setBackend] = useState<any>(null);
+
+  useEffect(() => {
+    import('react-dnd-html5-backend').then((mod) => {
+      setBackend(mod.HTML5Backend);
+    });
+  }, []);
+
+  if (!backend) {
+    return <>{children}</>;
+  }
+
+  return <DndProvider backend={backend}>{children}</DndProvider>;
 };

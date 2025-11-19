@@ -5,7 +5,7 @@
  * サーバーサイドとクライアントサイドの両方で使用可能です。
  */
 
-import { ErrorLevels, type AppError, type ErrorLevel } from './types';
+import { ErrorLevels, isAppError, toAppError, type AppError, type ErrorLevel } from './types';
 
 /**
  * ログエントリの型定義
@@ -114,44 +114,6 @@ function logDevelopmentError(entry: LogEntry, appError: AppError): void {
   }
 }
 
-/**
- * AppErrorかどうかを判定する関数
- */
-function isAppError(error: unknown): error is AppError {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'message' in error &&
-    'code' in error &&
-    typeof (error as AppError).message === 'string' &&
-    typeof (error as AppError).code === 'string'
-  );
-}
-
-/**
- * エラーをAppErrorに変換する関数
- */
-function toAppError(error: unknown): AppError {
-  if (isAppError(error)) {
-    return error;
-  }
-
-  if (error instanceof Error) {
-    return {
-      message: error.message,
-      code: 'UNKNOWN_ERROR',
-      level: ErrorLevels.ERROR,
-      originalError: error,
-    };
-  }
-
-  return {
-    message: String(error),
-    code: 'UNKNOWN_ERROR',
-    level: ErrorLevels.ERROR,
-    originalError: error,
-  };
-}
 
 /**
  * サーバーサイド用のエラーログ関数

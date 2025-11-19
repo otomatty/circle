@@ -4,14 +4,14 @@
  * サーバーサイドで使用するエラークラスを定義します。
  */
 
-import { ErrorCodes, ErrorLevels, type AppError, type ErrorCode } from './types';
+import { ErrorCodes, ErrorLevels, type AppError, type ErrorCode, type ErrorLevel } from './types';
 
 /**
  * サーバーサイド用のベースエラークラス
  */
 export class ServerError extends Error implements AppError {
   public readonly code: ErrorCode;
-  public readonly level: string;
+  public readonly level: ErrorLevel;
   public readonly originalError?: unknown;
   public readonly metadata?: Record<string, unknown>;
   public readonly i18nKey?: string;
@@ -21,7 +21,7 @@ export class ServerError extends Error implements AppError {
     message: string,
     code: ErrorCode = ErrorCodes.SERVER_ERROR,
     options?: {
-      level?: string;
+      level?: ErrorLevel;
       originalError?: unknown;
       metadata?: Record<string, unknown>;
       i18nKey?: string;
@@ -50,7 +50,7 @@ export class ServerError extends Error implements AppError {
     return {
       message: this.message,
       code: this.code,
-      level: this.level as any,
+      level: this.level,
       originalError: this.originalError,
       metadata: this.metadata,
       i18nKey: this.i18nKey,

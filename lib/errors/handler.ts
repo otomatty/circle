@@ -40,16 +40,19 @@ export async function handleServerAction<T>(
     });
 
     // エラーの種類に応じて適切なエラーをスロー
+    // 既にServerErrorのインスタンスの場合はそのままスロー
     if (error instanceof ServerError) {
       throw error;
     }
 
-    // データベースエラーの場合
+    // better-sqlite3のSqliteErrorをチェック
+    // SqliteErrorはErrorを継承し、codeプロパティを持つ
     if (
       error instanceof Error &&
-      (error.message.includes('database') ||
-        error.message.includes('SQL') ||
-        error.message.includes('query'))
+      'code' in error &&
+      typeof (error as { code?: string }).code === 'string' &&
+      ((error as { code: string }).code.startsWith('SQLITE_') ||
+        error.name === 'SqliteError')
     ) {
       throw new DatabaseError(
         options?.defaultErrorMessage || 'データベースエラーが発生しました',
@@ -57,7 +60,31 @@ export async function handleServerAction<T>(
       );
     }
 
-    // バリデーションエラーの場合
+    // バリデーションエラーの場合（instanceofチェックを優先）
+    if (error instanceof ValidationError) {
+      throw error;
+    }
+
+    // リソースが見つからない場合（instanceofチェックを優先）
+    if (error instanceof NotFoundError) {
+      throw error;
+    }
+
+    // データベースエラーの場合（フォールバック: メッセージベースの判定）
+    if (
+      error instanceof Error &&
+      (error.message.includes('database') ||
+        error.message.includes('SQL') ||
+        error.message.includes('query') ||
+        error.message.includes('SQLite'))
+    ) {
+      throw new DatabaseError(
+        options?.defaultErrorMessage || 'データベースエラーが発生しました',
+        error
+      );
+    }
+
+    // バリデーションエラーの場合（フォールバック: メッセージベースの判定）
     if (
       error instanceof Error &&
       (error.message.includes('validation') ||
@@ -70,7 +97,7 @@ export async function handleServerAction<T>(
       );
     }
 
-    // リソースが見つからない場合
+    // リソースが見つからない場合（フォールバック: メッセージベースの判定）
     if (
       error instanceof Error &&
       (error.message.includes('not found') ||

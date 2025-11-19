@@ -1,11 +1,14 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { ArrowLeft, MessageCircle } from 'lucide-react';
+import { ArrowLeft, MessageCircle, RefreshCw } from 'lucide-react';
 
 import { Button } from '~/components/ui/button';
 import { Heading } from '~/components/ui/heading';
+import { logClientError, toAppError } from '~/lib/errors';
 
 const GlobalErrorPage = ({
   error,
@@ -14,7 +17,20 @@ const GlobalErrorPage = ({
   error: Error & { digest?: string };
   reset: () => void;
 }) => {
-  console.error(error);
+  const { t } = useTranslation(['errors', 'common']);
+
+  useEffect(() => {
+    // エラーログを記録
+    const appError = toAppError(error);
+    logClientError(appError, {
+      component: 'GlobalErrorPage',
+      metadata: {
+        digest: error.digest,
+      },
+    });
+  }, [error]);
+
+  const isDevelopment = process.env.NODE_ENV === 'development';
 
   return (
     <html lang="ja">
@@ -28,7 +44,7 @@ const GlobalErrorPage = ({
             <div className={'flex flex-col items-center space-y-8'}>
               <div>
                 <h1 className={'font-heading text-9xl font-semibold'}>
-                  エラー
+                  {t('errors.title')}
                 </h1>
               </div>
 
@@ -39,28 +55,52 @@ const GlobalErrorPage = ({
                   }
                 >
                   <div>
-                    <Heading level={2}>予期せぬエラーが発生しました</Heading>
+                    <Heading level={2}>
+                      {t('errors.unexpectedError')}
+                    </Heading>
                   </div>
 
                   <p className={'text-muted-foreground text-lg'}>
-                    申し訳ありません。問題が発生しました。もう一度お試しください。
+                    {t('errors.unexpectedErrorDescription')}
                   </p>
+
+                  {isDevelopment && error.message && (
+                    <div className={'mt-4 rounded-md bg-destructive/10 p-4 text-left'}>
+                      <p className={'text-sm font-mono text-destructive'}>
+                        {error.message}
+                      </p>
+                      {error.stack && (
+                        <pre className={'mt-2 max-h-64 overflow-auto text-xs'}>
+                          {error.stack}
+                        </pre>
+                      )}
+                    </div>
+                  )}
                 </div>
 
-                <div>
+                <div className={'flex flex-col space-y-4'}>
                   <Button
                     className={'w-full'}
                     variant={'default'}
                     onClick={reset}
                   >
                     <ArrowLeft className={'mr-2 h-4'} />
-                    前のページに戻る
+                    {t('errors.goBack')}
+                  </Button>
+
+                  <Button
+                    className={'w-full'}
+                    variant={'outline'}
+                    onClick={() => window.location.reload()}
+                  >
+                    <RefreshCw className={'mr-2 h-4'} />
+                    {t('errors.refresh')}
                   </Button>
 
                   <Button className={'w-full'} variant={'outline'} asChild>
                     <Link href={'/contact'}>
                       <MessageCircle className={'mr-2 h-4'} />
-                      お問い合わせ
+                      {t('errors.contactSupport')}
                     </Link>
                   </Button>
                 </div>

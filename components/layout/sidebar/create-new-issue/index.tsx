@@ -33,6 +33,7 @@ import { PrioritySelector } from '../priority-selector';
 import { AssigneeSelector } from './assignee-selector';
 import { ProjectSelector } from './project-selector';
 import { LabelSelector } from './label-selector';
+import { CreateIssueFormSkeleton } from './create-issue-form-skeleton';
 import { ranks } from '~/mock-data/issues';
 
 /**
@@ -174,11 +175,11 @@ export function CreateNewIssue() {
             <Edit className="size-4" />
           </Button>
         </DialogTrigger>
-        <DialogContent className="w-full sm:max-w-[750px] p-4 shadow-xl top-[30%]">
-          <DialogHeader>
+        <DialogContent className="w-full sm:max-w-[750px] p-0 shadow-xl top-[30%]">
+          <DialogHeader className="p-4 pb-0">
             <DialogTitle>新規課題作成</DialogTitle>
           </DialogHeader>
-          <div>データの読み込み中...</div>
+          <CreateIssueFormSkeleton />
         </DialogContent>
       </Dialog>
     );

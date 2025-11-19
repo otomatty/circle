@@ -25,6 +25,8 @@ export function IssueLine({
       //href={`/lndev-ui/issue/${issue.identifier}`}
       {...(layoutId && { layoutId: `issue-line-${issue.identifier}` })}
       className="w-full flex items-center justify-start h-11 px-6 hover:bg-sidebar/50"
+      role="listitem"
+      aria-label={`課題: ${issue.title}`}
     >
       <div className="flex items-center gap-0.5">
         <PrioritySelector priority={issue.priority} issueId={issue.id} />

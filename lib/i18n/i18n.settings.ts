@@ -55,6 +55,7 @@ export const defaultI18nNamespaces = [
   'teams',
   'billing',
   'marketing',
+  'errors',
 ];
 
 export type TranslationNamespace = (typeof defaultI18nNamespaces)[number];

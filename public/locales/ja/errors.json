@@ -4,8 +4,10 @@
   "genericDescription": "予期しないエラーが発生しました。しばらくしてから再度お試しください。",
   "database": "データベースエラーが発生しました",
   "databaseDescription": "データの取得または保存中に問題が発生しました。",
+  "databaseRecovery": "しばらく時間をおいてから、もう一度お試しください。問題が続く場合は、サポートにお問い合わせください。",
   "validation": "入力値が不正です",
   "validationDescription": "入力された値に問題があります。内容を確認してください。",
+  "validationRecovery": "入力内容を確認し、必須項目がすべて入力されているか、形式が正しいか確認してください。",
   "notFound": "リソースが見つかりません",
   "notFoundDescription": "お探しのリソースは存在しないか、削除された可能性があります。",
   "unauthorized": "認証が必要です",
@@ -14,6 +16,7 @@
   "forbiddenDescription": "このリソースにアクセスする権限がありません。",
   "network": "ネットワークエラーが発生しました",
   "networkDescription": "ネットワーク接続に問題がある可能性があります。接続を確認してください。",
+  "networkRecovery": "接続を確認してから、もう一度お試しください。",
   "server": "サーバーエラーが発生しました",
   "serverDescription": "サーバー側で問題が発生しました。しばらくしてから再度お試しください。",
   "unknown": "不明なエラーが発生しました",
@@ -39,6 +42,12 @@
     "getLabelCounts": "ラベルカウントの取得に失敗しました",
     "getPriorityCounts": "優先度カウントの取得に失敗しました",
     "getStatusCounts": "ステータスカウントの取得に失敗しました"
+  },
+  "recovery": {
+    "retry": "再試行",
+    "checkConnection": "接続を確認",
+    "checkInput": "入力内容を確認",
+    "contactSupport": "サポートにお問い合わせ"
   }
 }
 

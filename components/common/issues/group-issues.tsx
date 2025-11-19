@@ -43,6 +43,8 @@ export function GroupIssues({ status, issues, count }: GroupIssuesProps) {
           ? 'overflow-hidden rounded-md h-full flex-shrink-0 w-[348px] flex flex-col'
           : ''
       )}
+      role={isViewTypeGrid ? 'region' : 'group'}
+      aria-label={`ステータス: ${status.name}、課題数: ${count}`}
     >
       <div
         className={cn(
@@ -81,14 +83,15 @@ export function GroupIssues({ status, issues, count }: GroupIssuesProps) {
               e.stopPropagation();
               openModal(status);
             }}
+            aria-label={`${status.name}に新しい課題を追加`}
           >
-            <Plus className="size-4" />
+            <Plus className="size-4" aria-hidden="true" />
           </Button>
         </div>
       </div>
 
       {viewType === 'list' ? (
-        <div className="space-y-0">
+        <div className="space-y-0" role="list" aria-label={`${status.name}の課題リスト`}>
           {sortedIssues.map((issue) => (
             <IssueLine key={issue.id} issue={issue} layoutId={true} />
           ))}
@@ -132,6 +135,9 @@ const IssueGridList: FC<{ issues: Issue[]; status: Status }> = ({
     <div
       ref={ref}
       className="flex-1 h-full overflow-y-auto p-2 space-y-2 bg-zinc-50/50 dark:bg-zinc-900/50 relative"
+      role="region"
+      aria-label={`${status.name}の課題ドロップゾーン`}
+      aria-live="polite"
     >
       <AnimatePresence>
         {isOver && (

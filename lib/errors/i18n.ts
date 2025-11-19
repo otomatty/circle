@@ -50,3 +50,29 @@ export function getErrorMessage(error: AppError, t?: (key: string, params?: Reco
   return error.message;
 }
 
+/**
+ * エラー回復メッセージを取得する関数（i18n対応）
+ * エラータイプに応じた回復アクションの提案を返します
+ */
+export function getErrorRecoveryMessage(error: AppError, t?: (key: string, params?: Record<string, string | number>) => string): string | undefined {
+  if (!t) {
+    return undefined;
+  }
+
+  const recoveryKeyMap: Record<string, string> = {
+    DATABASE_ERROR: 'errors.databaseRecovery',
+    DATABASE_CONNECTION_ERROR: 'errors.databaseRecovery',
+    DATABASE_QUERY_ERROR: 'errors.databaseRecovery',
+    VALIDATION_ERROR: 'errors.validationRecovery',
+    INVALID_INPUT: 'errors.validationRecovery',
+    NETWORK_ERROR: 'errors.networkRecovery',
+  };
+
+  const recoveryKey = recoveryKeyMap[error.code];
+  if (recoveryKey) {
+    return t(recoveryKey, error.i18nParams);
+  }
+
+  return undefined;
+}
+

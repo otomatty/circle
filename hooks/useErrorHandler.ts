@@ -3,7 +3,8 @@
 import { useTranslation } from 'react-i18next';
 
 import { useToast } from './useToast';
-import { logClientError, toAppError, getErrorMessage, type AppError } from '~/lib/errors';
+import { logClientError, toAppError, getErrorMessage, getErrorRecoveryMessage, type AppError } from '~/lib/errors';
+import { ErrorCodes } from '~/lib/errors/types';
 
 /**
  * エラーハンドリング用のカスタムフック
@@ -19,6 +20,7 @@ export function useErrorHandler() {
       onError?: (error: AppError) => void;
       successMessage?: string;
       component?: string;
+      retry?: () => Promise<T>;
     }
   ): Promise<T | undefined> => {
     try {
@@ -42,10 +44,21 @@ export function useErrorHandler() {
 
       // i18n対応のエラーメッセージを取得
       const errorMessage = getErrorMessage(appError, t);
+      const recoveryMessage = getErrorRecoveryMessage(appError, t);
+
+      // エラーメッセージと回復メッセージを結合
+      // ネットワークエラーの場合は再試行のヒントを追加
+      let fullMessage = errorMessage;
+      if (recoveryMessage) {
+        fullMessage = `${errorMessage}\n\n${recoveryMessage}`;
+      }
+      if (appError.code === ErrorCodes.NETWORK_ERROR && options?.retry) {
+        fullMessage = `${fullMessage}\n\n${t('errors.recovery.retry')}ボタンをクリックして再試行できます。`;
+      }
 
       toast({
         title: t('errors.title'),
-        description: errorMessage,
+        description: fullMessage,
         variant: 'destructive',
       });
 

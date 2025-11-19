@@ -168,10 +168,16 @@ CREATE INDEX IF NOT EXISTS idx_issues_status_id ON issues(status_id);
 CREATE INDEX IF NOT EXISTS idx_issues_priority_id ON issues(priority_id);
 CREATE INDEX IF NOT EXISTS idx_issues_project_id ON issues(project_id);
 CREATE INDEX IF NOT EXISTS idx_issues_cycle_id ON issues(cycle_id);
+CREATE INDEX IF NOT EXISTS idx_issues_created_at ON issues(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_issues_updated_at ON issues(updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_issues_rank ON issues(rank);
 CREATE INDEX IF NOT EXISTS idx_issue_assignees_issue_id ON issue_assignees(issue_id);
 CREATE INDEX IF NOT EXISTS idx_issue_assignees_user_id ON issue_assignees(user_id);
 CREATE INDEX IF NOT EXISTS idx_issue_labels_issue_id ON issue_labels(issue_id);
 CREATE INDEX IF NOT EXISTS idx_issue_labels_label_id ON issue_labels(label_id);
 CREATE INDEX IF NOT EXISTS idx_issue_relations_parent ON issue_relations(parent_issue_id);
 CREATE INDEX IF NOT EXISTS idx_issue_relations_child ON issue_relations(child_issue_id);
+-- 複合インデックス（よく一緒に検索されるカラムの組み合わせ）
+CREATE INDEX IF NOT EXISTS idx_issues_project_status ON issues(project_id, status_id);
+CREATE INDEX IF NOT EXISTS idx_issues_status_priority ON issues(status_id, priority_id);
 

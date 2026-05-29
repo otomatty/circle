@@ -130,6 +130,9 @@ export function IssueGrid({ issue }: IssueGridProps) {
       ref={ref}
       className="w-full p-3 bg-background rounded-md shadow-xs border border-border/50 cursor-default"
       layoutId={`issue-grid-${issue.identifier}`}
+      role="article"
+      aria-label={`課題: ${issue.title}`}
+      aria-describedby={`issue-${issue.id}-details`}
       style={{
         opacity: isDragging ? 0.5 : 1,
         cursor: isDragging ? 'grabbing' : 'default',
@@ -145,7 +148,9 @@ export function IssueGrid({ issue }: IssueGridProps) {
         <StatusSelector status={issue.status} issueId={issue.id} />
       </div>
 
-      <h3 className="text-sm font-semibold mb-3 line-clamp-2">{issue.title}</h3>
+      <h3 className="text-sm font-semibold mb-3 line-clamp-2" id={`issue-${issue.id}-details`}>
+        {issue.title}
+      </h3>
 
       <div className="flex flex-wrap gap-1.5 mb-3 min-h-[1.5rem]">
         <LabelBadge label={issue.labels} />

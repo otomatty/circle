@@ -4,8 +4,10 @@
   "genericDescription": "An unexpected error occurred. Please try again later.",
   "database": "A database error occurred",
   "databaseDescription": "A problem occurred while retrieving or saving data.",
+  "databaseRecovery": "Please wait a moment and try again. If the problem persists, please contact support.",
   "validation": "Invalid input",
   "validationDescription": "There is a problem with the entered value. Please check the content.",
+  "validationRecovery": "Please check that all required fields are filled and the format is correct.",
   "notFound": "Resource not found",
   "notFoundDescription": "The resource you are looking for may not exist or may have been deleted.",
   "unauthorized": "Authentication required",
@@ -14,6 +16,7 @@
   "forbiddenDescription": "You do not have permission to access this resource.",
   "network": "A network error occurred",
   "networkDescription": "There may be a problem with your network connection. Please check your connection.",
+  "networkRecovery": "Please check your connection and try again.",
   "server": "A server error occurred",
   "serverDescription": "A problem occurred on the server side. Please try again later.",
   "unknown": "An unknown error occurred",
@@ -39,6 +42,12 @@
     "getLabelCounts": "Failed to retrieve label counts",
     "getPriorityCounts": "Failed to retrieve priority counts",
     "getStatusCounts": "Failed to retrieve status counts"
+  },
+  "recovery": {
+    "retry": "Retry",
+    "checkConnection": "Check Connection",
+    "checkInput": "Check Input",
+    "contactSupport": "Contact Support"
   }
 }
 

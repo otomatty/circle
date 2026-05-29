@@ -9,6 +9,7 @@ import { useState, useEffect, lazy, Suspense } from 'react';
 import { GroupIssues } from './group-issues';
 import { SearchIssues } from './search-issues';
 import { CustomDragLayer } from './issue-grid';
+import { GroupIssuesSkeletonList } from './group-issues-skeleton';
 import { cn } from '~/lib/utils/cn';
 
 // react-dndを動的インポート（バンドルサイズ削減）
@@ -31,7 +32,11 @@ export default function AllIssues() {
   const isViewTypeGrid = viewType === 'grid';
 
   return (
-    <div className={cn('w-full h-full', isViewTypeGrid && 'overflow-x-auto')}>
+    <div
+      className={cn('w-full h-full', isViewTypeGrid && 'overflow-x-auto')}
+      role="main"
+      aria-label={isViewTypeGrid ? '課題ボード表示' : '課題リスト表示'}
+    >
       {isSearching ? (
         <SearchIssuesView />
       ) : (
@@ -63,27 +68,37 @@ const GroupIssuesListView: FC<{
   const statuses = useAtomValue(statusesAtom);
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense
+      fallback={
+        <GroupIssuesSkeletonList
+          isViewTypeGrid={isViewTypeGrid}
+          groupCount={statuses.length || 3}
+          issueCountPerGroup={3}
+        />
+      }
+    >
       <DndProviderWrapper>
-      <CustomDragLayer />
-      <div
-        className={cn(
-          isViewTypeGrid && 'flex h-full gap-3 px-2 py-2 min-w-max'
-        )}
-      >
-        {statuses.map((statusItem) => {
-          const issuesForStatus = issuesByStatus[statusItem.id] || [];
-          const count = issuesForStatus.length;
-          return (
-            <GroupIssues
-              key={statusItem.id}
-              status={statusItem}
-              issues={issuesForStatus}
-              count={count}
-            />
-          );
-        })}
-      </div>
+        <CustomDragLayer />
+        <div
+          className={cn(
+            isViewTypeGrid && 'flex h-full gap-3 px-2 py-2 min-w-max'
+          )}
+          role={isViewTypeGrid ? 'region' : 'list'}
+          aria-label="課題グループ一覧"
+        >
+          {statuses.map((statusItem) => {
+            const issuesForStatus = issuesByStatus[statusItem.id] || [];
+            const count = issuesForStatus.length;
+            return (
+              <GroupIssues
+                key={statusItem.id}
+                status={statusItem}
+                issues={issuesForStatus}
+                count={count}
+              />
+            );
+          })}
+        </div>
       </DndProviderWrapper>
     </Suspense>
   );
@@ -105,7 +120,13 @@ const DndProviderWrapper: FC<{ children: React.ReactNode }> = ({
   }, []);
 
   if (!backend) {
-    return <>{children}</>;
+    return (
+      <GroupIssuesSkeletonList
+        isViewTypeGrid={false}
+        groupCount={3}
+        issueCountPerGroup={3}
+      />
+    );
   }
 
   return <DndProvider backend={backend}>{children}</DndProvider>;

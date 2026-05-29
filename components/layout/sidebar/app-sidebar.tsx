@@ -14,6 +14,7 @@ import { getStatuses } from '~/actions/status';
 import { getProjects } from '~/actions/projects';
 import { getLabels } from '~/actions/labels';
 import { getUsers } from '~/actions/users';
+import { getCurrentProfile } from '~/lib/supabase/profile';
 import { AppSidebarClient } from './app-sidebar-client';
 import type { LucideIcon } from 'lucide-react';
 
@@ -91,8 +92,9 @@ export async function AppSidebar({
     return [];
   });
 
-  // 並列で取得 (Counts系を削除)
-  const [teams, priorities, statuses, projects, labels, users] =
+  const profilePromise = getCurrentProfile();
+
+  const [teams, priorities, statuses, projects, labels, users, profile] =
     await Promise.all([
       teamsPromise,
       prioritiesPromise,
@@ -100,6 +102,7 @@ export async function AppSidebar({
       projectsPromise,
       labelsPromise,
       usersPromise,
+      profilePromise,
     ]);
 
   return (
@@ -110,6 +113,7 @@ export async function AppSidebar({
       projects={projects}
       labels={labels}
       users={users}
+      profile={profile}
       inboxData={data.inbox}
       workspaceData={data.workspace}
       {...props}

@@ -1,72 +1,53 @@
 'use server';
 
-import { getDatabase } from '~/lib/db/client';
+import { getSupabase } from '~/lib/supabase/data';
 import type { Status } from '~/types/status';
 
-/**
- * データベースからステータスリストを取得します
- * Server Actionsではシリアライズ可能なデータのみを返すため、iconは文字列として返します
- */
-export async function getStatuses(): Promise<Array<Omit<Status, 'icon'> & { icon: string }>> {
-  const db = getDatabase();
+export async function getStatuses(): Promise<
+  Array<Omit<Status, 'icon'> & { icon: string }>
+> {
+  const supabase = await getSupabase();
 
-  try {
-    const statuses = db
-      .prepare('SELECT * FROM statuses ORDER BY display_order ASC')
-      .all() as Array<{
-      id: string;
-      slug: string;
-      name: string;
-      color: string | null;
-      icon: string | null;
-    }>;
+  const { data, error } = await supabase
+    .from('statuses')
+    .select('*')
+    .order('display_order', { ascending: true });
 
-    // DBデータをStatusの形式に変換（iconは文字列のまま返す）
-    return statuses.map((item) => ({
-      id: item.slug,
-      name: item.name,
-      icon: item.icon ?? 'circle', // 文字列として返す
-      color: item.color || '#4f46e5',
-    }));
-  } catch (error) {
-    console.error('Statuses取得エラー:', error);
+  if (error) {
+    console.error('Statuses fetch error:', error);
     throw new Error('ステータスデータの取得に失敗しました');
   }
+
+  return (data ?? []).map((item) => ({
+    id: item.slug,
+    name: item.name,
+    icon: item.icon ?? 'circle',
+    color: item.color || '#4f46e5',
+  }));
 }
 
-/**
- * ステータスごとの課題数を取得します
- */
 export async function getStatusCounts(): Promise<Record<string, number>> {
-  const db = getDatabase();
+  const supabase = await getSupabase();
 
-  try {
-    const issues = db
-      .prepare(
-        `
-        SELECT i.status_id, s.slug
-        FROM issues i
-        INNER JOIN statuses s ON i.status_id = s.id
-        WHERE i.status_id IS NOT NULL
-      `
-      )
-      .all() as Array<{
-      status_id: string;
-      slug: string;
-    }>;
+  const { data, error } = await supabase.from('issues').select(`
+      status_id,
+      statuses ( slug )
+    `);
 
-    // 各ステータスのカウントを集計
-    const counts: Record<string, number> = {};
-
-    for (const item of issues) {
-      if (item.slug) {
-        counts[item.slug] = (counts[item.slug] || 0) + 1;
-      }
-    }
-
-    return counts;
-  } catch (error) {
-    console.error('Status counts 取得エラー:', error);
+  if (error) {
+    console.error('Status counts fetch error:', error);
     throw new Error('ステータスカウントの取得に失敗しました');
   }
+
+  const counts: Record<string, number> = {};
+
+  for (const item of data ?? []) {
+    const raw = item.statuses;
+    const status = Array.isArray(raw) ? raw[0] : raw;
+    if (status?.slug) {
+      counts[status.slug] = (counts[status.slug] || 0) + 1;
+    }
+  }
+
+  return counts;
 }

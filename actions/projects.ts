@@ -1,77 +1,72 @@
 'use server';
 
-import { getDatabase } from '~/lib/db/client';
+import { getSupabase } from '~/lib/supabase/data';
 import type { Project } from '~/types/projects';
 
-/**
- * データベースからプロジェクトリストを取得します
- * Server Actionsではシリアライズ可能なデータのみを返すため、iconは文字列として返します
- */
-export async function getProjects(): Promise<Array<Omit<Project, 'icon'> & { icon: string }>> {
-  const db = getDatabase();
+export async function getProjects(): Promise<
+  Array<Omit<Project, 'icon'> & { icon: string }>
+> {
+  const supabase = await getSupabase();
 
-  try {
-    const projects = db
-      .prepare('SELECT * FROM projects ORDER BY name ASC')
-      .all() as Array<{
-      id: string;
-      name: string;
-      icon: string | null;
-      status_id: string | null;
-      percent_complete: number | null;
-    }>;
+  const { data, error } = await supabase
+    .from('projects')
+    .select('*')
+    .order('name', { ascending: true });
 
-    // DBデータをProjectの形式に変換（iconは文字列のまま返す）
-    return projects.map((item) => ({
-      id: item.id,
-      name: item.name,
-      description: '', // descriptionはスキーマにないので空文字
-      icon: item.icon ?? 'folder', // 文字列として返す
-      color: '#4f46e5', // データベースにないのでデフォルト値のみ設定
-      percentComplete: item.percent_complete || 0,
-      status: item.status_id ? { id: item.status_id } : null,
-    }));
-  } catch (error) {
-    console.error('Projects取得エラー:', error);
+  if (error) {
+    console.error('Projects fetch error:', error);
     throw new Error('プロジェクトデータの取得に失敗しました');
   }
+
+  return (data ?? []).map((item) => ({
+    id: item.id,
+    name: item.name,
+    description: '',
+    icon: item.icon ?? 'folder',
+    color: '#4f46e5',
+    percentComplete: item.percent_complete || 0,
+    status: item.status_id
+      ? ({
+          id: item.status_id,
+          name: item.status_id,
+          icon: 'circle',
+          color: '#4f46e5',
+        } as Project['status'])
+      : undefined,
+  }));
 }
 
-/**
- * プロジェクトごとの課題数を取得します
- */
 export async function getProjectCounts(): Promise<Record<string, number>> {
-  const db = getDatabase();
+  const supabase = await getSupabase();
 
-  try {
-    // プロジェクトに紐づいた課題
-    const projectIssues = db
-      .prepare('SELECT project_id FROM issues WHERE project_id IS NOT NULL')
-      .all() as Array<{
-      project_id: string;
-    }>;
+  const { data: projectIssues, error } = await supabase
+    .from('issues')
+    .select('project_id')
+    .not('project_id', 'is', null);
 
-    // プロジェクトなしの課題数を取得
-    const noProjectCount = db
-      .prepare(
-        'SELECT COUNT(*) as count FROM issues WHERE project_id IS NULL'
-      )
-      .get() as { count: number } | undefined;
-
-    // 各プロジェクトのカウントを集計
-    const counts: Record<string, number> = {
-      'no-project': noProjectCount?.count || 0,
-    };
-
-    for (const item of projectIssues) {
-      if (item.project_id) {
-        counts[item.project_id] = (counts[item.project_id] || 0) + 1;
-      }
-    }
-
-    return counts;
-  } catch (error) {
-    console.error('Project counts 取得エラー:', error);
+  if (error) {
+    console.error('Project counts fetch error:', error);
     throw new Error('プロジェクトカウントの取得に失敗しました');
   }
+
+  const { count: noProjectCount, error: noProjectError } = await supabase
+    .from('issues')
+    .select('id', { count: 'exact', head: true })
+    .is('project_id', null);
+
+  if (noProjectError) {
+    console.error('No-project count fetch error:', noProjectError);
+  }
+
+  const counts: Record<string, number> = {
+    'no-project': noProjectCount ?? 0,
+  };
+
+  for (const item of projectIssues ?? []) {
+    if (item.project_id) {
+      counts[item.project_id] = (counts[item.project_id] || 0) + 1;
+    }
+  }
+
+  return counts;
 }

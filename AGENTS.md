@@ -239,3 +239,11 @@ export const Button: React.FC<ButtonProps> = (props) => {
 - **どのファイルが影響を受けるか（依存関係）**
 - **どのファイルの DEPENDENCY MAP を更新すべきか**
 ```
+
+## Cursor Cloud specific instructions
+
+- このリポジトリは単一の Next.js/Bun アプリです。標準のセットアップ、SQLite 初期化、シード、ビルド、開発サーバーの基本コマンドは `README.md` と `package.json` の scripts を参照してください。
+- Cursor Cloud ではローカルビルド用に、git 管理外の `.env.local` に `NEXT_PUBLIC_SITE_URL=http://localhost:3000` と `NEXT_PUBLIC_CI=true` が必要です。`NEXT_PUBLIC_CI=true` がないと、本番ビルド時の sitemap 生成で localhost の HTTP URL が拒否されます。
+- UI 動作確認には SQLite のシードデータが必要です。`database.sqlite` がない、または空の環境では、README の DB 初期化とシード手順を実行してから対象ページを開いてください。
+- `bun run dev` は `next dev --turbo` を起動しますが、この Cursor Cloud 環境では Turbopack が root page を HTTP 500 にすることがあります。UI 確認では `bun run with-env next dev -p 3001` のように `--turbo` なしで起動すると、`/core/team/CORE/all` が正常に表示されます。
+- `biome.json` は旧 monorepo の `../../tooling/biome.json` を参照しています。Cursor Cloud で `bun run lint` が設定ファイルなしで失敗する場合は、環境側に `/tooling/biome.json` が必要です。設定が解決された後も、現状のコードには lint 診断が残っています。

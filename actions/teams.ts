@@ -1,73 +1,118 @@
 'use server';
 
-import { getDatabase } from '~/lib/db/client';
+import { getSupabase } from '~/lib/supabase/data';
 import type { Team } from '~/types/teams';
 
-/**
- * チームの一覧とそれに紐づくプロジェクトを取得します
- * Server Actionsではシリアライズ可能なデータのみを返すため、iconは文字列として返します
- */
-export async function getTeams(): Promise<Array<Omit<Team, 'projects'> & { projects: Array<Omit<Team['projects'][0], 'icon'> & { icon: string }> }>> {
-  const db = getDatabase();
+export async function getTeams(): Promise<
+  Array<
+    Omit<Team, 'projects'> & {
+      projects: Array<Omit<Team['projects'][0], 'icon'> & { icon: string }>;
+    }
+  >
+> {
+  const supabase = await getSupabase();
 
-  try {
-    // チームの基本情報を取得
-    const teamsData = db
-      .prepare('SELECT * FROM teams')
-      .all() as Array<{
-      id: string;
-      slug: string;
-      name: string;
-      icon: string | null;
-      color: string | null;
-    }>;
+  const { data: teamsData, error: teamsError } = await supabase
+    .from('teams')
+    .select('*')
+    .order('created_at', { ascending: true });
 
-    // チームごとのプロジェクト情報を取得
-    const teams = teamsData.map((team) => {
-      // チームに関連するプロジェクトを取得
-      const projectsData = db
-        .prepare(
+  if (teamsError) {
+    console.error('Teams fetch error:', teamsError);
+    throw new Error('チームデータの取得に失敗しました');
+  }
+
+  const teams = await Promise.all(
+    (teamsData ?? []).map(async (team) => {
+      const { data: projectsData, error: projectsError } = await supabase
+        .from('team_projects')
+        .select(
           `
-          SELECT 
-            p.id,
-            p.name,
-            p.icon,
-            p.status_id,
-            p.percent_complete
-          FROM team_projects tp
-          INNER JOIN projects p ON tp.project_id = p.id
-          WHERE tp.team_id = ?
+          project_id,
+          projects (
+            id,
+            name,
+            icon,
+            status_id,
+            percent_complete
+          )
         `
         )
-        .all(team.id) as Array<{
-        id: string;
-        name: string;
-        icon: string | null;
-        status_id: string | null;
-        percent_complete: number | null;
-      }>;
+        .eq('team_id', team.id);
 
-      // プロジェクトデータを整形（iconは文字列のまま返す）
-      const projects = projectsData.map((projectData) => ({
-        id: projectData.id,
-        name: projectData.name,
-        icon: projectData.icon ?? 'folder', // 文字列として返す
-        percentComplete: projectData.percent_complete || 0,
-        status: projectData.status_id ? { id: projectData.status_id } : null,
-      }));
+      if (projectsError) {
+        console.error('Team projects fetch error:', projectsError);
+      }
+
+      const projects = (projectsData ?? []).flatMap((row) => {
+        const raw = row.projects;
+        const project = Array.isArray(raw) ? raw[0] : raw;
+        if (!project) return [];
+        return [
+          {
+            id: project.id,
+            name: project.name,
+            icon: project.icon ?? 'folder',
+            percentComplete: project.percent_complete || 0,
+            status: project.status_id ? { id: project.status_id } : null,
+          },
+        ];
+      });
 
       return {
         id: team.slug,
         name: team.name,
         icon: team.icon,
+        color: team.color ?? '#4f46e5',
+        members: [],
         projects,
-        joined: true, // デフォルトはtrueとする
+        joined: true,
       };
-    });
+    })
+  );
 
-    return teams;
-  } catch (error) {
-    console.error('Teams取得エラー:', error);
-    throw new Error('チームデータの取得に失敗しました');
+  return teams;
+}
+
+export async function getTeamSlugById(teamId: string): Promise<string | null> {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase
+    .from('teams')
+    .select('slug')
+    .eq('id', teamId)
+    .maybeSingle();
+
+  if (error || !data) {
+    return null;
   }
+
+  return data.slug;
+}
+
+export async function getFirstTeamSlugForUser(
+  userId: string
+): Promise<string | null> {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase
+    .from('team_members')
+    .select('teams ( slug )')
+    .eq('user_id', userId)
+    .limit(1);
+
+  if (!error && data?.[0]?.teams) {
+    const teams = data[0].teams as { slug: string } | { slug: string }[];
+    if (Array.isArray(teams)) {
+      return teams[0]?.slug ?? null;
+    }
+    return teams.slug;
+  }
+
+  const { data: fallback } = await supabase
+    .from('teams')
+    .select('slug')
+    .order('created_at', { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  return fallback?.slug ?? null;
 }

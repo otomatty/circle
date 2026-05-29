@@ -1,28 +1,49 @@
 /**
- * Next.jsミドルウェアファイル
- *
- * 認証は廃止されたため、このミドルウェアは最小限の処理のみを行います。
+ * Next.js middleware — Supabase session refresh and route protection.
  */
 
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 
-/**
- * ミドルウェアが適用されるパスのマッチャー設定
- * 静的ファイルや画像、APIルートなどを除外
- */
+import pathsConfig from '~/config/paths.config';
+import { isSupabaseConfigured } from '~/lib/supabase/env';
+import { updateSession } from '~/lib/supabase/middleware';
+
 export const config = {
   matcher: ['/((?!_next/static|_next/image|images|locales|assets|api/*).*)'],
 };
 
-/**
- * ミドルウェア関数
- * 全てのリクエストに対して実行される
- *
- * @param request - Nextリクエストオブジェクト
- * @returns Nextレスポンスオブジェクト
- */
+const PUBLIC_PATH_PREFIXES = [
+  pathsConfig.auth.signIn,
+  pathsConfig.auth.signUp,
+  pathsConfig.auth.callback,
+  pathsConfig.auth.passwordReset,
+  pathsConfig.auth.passwordUpdate,
+];
+
+function isPublicPath(pathname: string): boolean {
+  return PUBLIC_PATH_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+  );
+}
+
 export async function middleware(request: NextRequest) {
-  // 認証が廃止されたため、単にリクエストを通す
-  return NextResponse.next();
+  if (!isSupabaseConfigured()) {
+    return NextResponse.next();
+  }
+
+  const { supabaseResponse, user } = await updateSession(request);
+  const { pathname } = request.nextUrl;
+
+  if (user && pathname === pathsConfig.auth.signIn) {
+    const next = request.nextUrl.searchParams.get('next') ?? '/';
+    return NextResponse.redirect(new URL(next, request.url));
+  }
+
+  if (!user && !isPublicPath(pathname)) {
+    const signInUrl = new URL(pathsConfig.auth.signIn, request.url);
+    signInUrl.searchParams.set('next', pathname);
+    return NextResponse.redirect(signInUrl);
+  }
+
+  return supabaseResponse;
 }

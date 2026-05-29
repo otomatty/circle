@@ -17,7 +17,7 @@ import { HelpButton } from '~/components/layout/sidebar/help-button';
 import { NavInbox } from '~/components/layout/sidebar/nav-inbox';
 import { NavTeams } from '~/components/layout/sidebar/nav-teams';
 import { NavWorkspace } from '~/components/layout/sidebar/nav-workspace';
-import { OrgSwitcher } from '~/components/layout/sidebar/org-switcher';
+import { UserMenu } from '~/components/account/user-menu';
 import { Button } from '~/components/ui/button';
 import {
   Sidebar,
@@ -64,6 +64,7 @@ interface AppSidebarClientProps extends React.ComponentProps<typeof Sidebar> {
   projects: Array<Omit<Project, 'icon'> & { icon: string }>;
   labels: LabelInterface[];
   users: User[];
+  profile: User | null;
   inboxData: NavItem[];
   workspaceData: NavItem[];
 }
@@ -75,6 +76,7 @@ export function AppSidebarClient({
   projects,
   labels,
   users,
+  profile,
   inboxData,
   workspaceData,
   ...props
@@ -158,7 +160,9 @@ export function AppSidebarClient({
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
-        <OrgSwitcher />
+        {profile ? (
+          <UserMenu profile={profile} teamName="Circle" />
+        ) : null}
       </SidebarHeader>
       <SidebarContent>
         <NavInbox inbox={inboxWithIcons} />

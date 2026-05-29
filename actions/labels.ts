@@ -1,60 +1,47 @@
 'use server';
 
-import { getDatabase } from '~/lib/db/client';
+import { getSupabase } from '~/lib/supabase/data';
 import type { LabelInterface } from '~/types/labels';
 
-/**
- * データベースからラベルリストを取得します
- */
 export async function getLabels(): Promise<LabelInterface[]> {
-  const db = getDatabase();
+  const supabase = await getSupabase();
 
-  try {
-    const labels = db
-      .prepare('SELECT * FROM labels ORDER BY name ASC')
-      .all() as Array<{
-      id: string;
-      name: string;
-      color: string;
-    }>;
+  const { data, error } = await supabase
+    .from('labels')
+    .select('*')
+    .order('name', { ascending: true });
 
-    // DBデータをLabelInterfaceの形式に変換
-    return labels.map((item) => ({
-      id: item.id,
-      name: item.name,
-      color: item.color || '#4f46e5',
-    })) as LabelInterface[];
-  } catch (error) {
-    console.error('Labels取得エラー:', error);
+  if (error) {
+    console.error('Labels fetch error:', error);
     throw new Error('ラベルデータの取得に失敗しました');
   }
+
+  return (data ?? []).map((item) => ({
+    id: item.id,
+    name: item.name,
+    color: item.color || '#4f46e5',
+  })) as LabelInterface[];
 }
 
-/**
- * ラベルごとの課題数を取得します
- */
 export async function getLabelCounts(): Promise<Record<string, number>> {
-  const db = getDatabase();
+  const supabase = await getSupabase();
 
-  try {
-    const issueLabels = db
-      .prepare('SELECT label_id FROM issue_labels')
-      .all() as Array<{
-      label_id: string;
-    }>;
+  const { data, error } = await supabase
+    .from('issue_labels')
+    .select('label_id');
 
-    // 各ラベルのカウントを集計
-    const counts: Record<string, number> = {};
-
-    for (const item of issueLabels) {
-      if (item.label_id) {
-        counts[item.label_id] = (counts[item.label_id] || 0) + 1;
-      }
-    }
-
-    return counts;
-  } catch (error) {
-    console.error('Label counts 取得エラー:', error);
+  if (error) {
+    console.error('Label counts fetch error:', error);
     throw new Error('ラベルカウントの取得に失敗しました');
   }
+
+  const counts: Record<string, number> = {};
+
+  for (const item of data ?? []) {
+    if (item.label_id) {
+      counts[item.label_id] = (counts[item.label_id] || 0) + 1;
+    }
+  }
+
+  return counts;
 }

@@ -1,106 +1,82 @@
 'use server';
 
-import { getDatabase } from '~/lib/db/client';
+import { getSupabase } from '~/lib/supabase/data';
 
-/**
- * 特定のプロジェクトに関連するタスク(課題)一覧を取得します
- * @param projectId プロジェクトID
- */
 export async function getIssuesByProjectId(projectId: string) {
-  const db = getDatabase();
+  const supabase = await getSupabase();
 
-  try {
-    const issues = db
-      .prepare(
-        `
-        SELECT 
-          i.id,
-          i.identifier,
-          i.title,
-          i.description,
-          i.created_at,
-          i.project_id,
-          s.id as status_id,
-          s.name as status_name,
-          s.slug as status_slug,
-          s.color as status_color,
-          s.icon as status_icon,
-          p.id as priority_id,
-          p.name as priority_name,
-          p.slug as priority_slug,
-          p.icon as priority_icon
-        FROM issues i
-        LEFT JOIN statuses s ON i.status_id = s.id
-        LEFT JOIN priorities p ON i.priority_id = p.id
-        WHERE i.project_id = ?
-        ORDER BY i.created_at DESC
+  const { data, error } = await supabase
+    .from('issues')
+    .select(
       `
+      id,
+      identifier,
+      title,
+      description,
+      created_at,
+      project_id,
+      statuses (
+        id,
+        name,
+        slug,
+        color,
+        icon
+      ),
+      priorities (
+        id,
+        name,
+        slug,
+        icon
       )
-      .all(projectId) as Array<{
-      id: string;
-      identifier: string;
-      title: string;
-      description: string | null;
-      created_at: string;
-      project_id: string | null;
-      status_id: string | null;
-      status_name: string | null;
-      status_slug: string | null;
-      status_color: string | null;
-      status_icon: string | null;
-      priority_id: string | null;
-      priority_name: string | null;
-      priority_slug: string | null;
-      priority_icon: string | null;
-    }>;
+    `
+    )
+    .eq('project_id', projectId)
+    .order('created_at', { ascending: false });
 
-    // Supabaseの形式に合わせてデータを整形
-    return issues.map((issue) => ({
+  if (error) {
+    console.error(`Project ${projectId} issues fetch error:`, error);
+    throw new Error('タスクの取得に失敗しました');
+  }
+
+  return (data ?? []).map((issue) => {
+    const status = issue.statuses as {
+      id: string;
+      name: string;
+      slug: string;
+      color: string | null;
+      icon: string | null;
+    } | null;
+    const priority = issue.priorities as {
+      id: string;
+      name: string;
+      slug: string;
+      icon: string | null;
+    } | null;
+
+    return {
       id: issue.id,
       identifier: issue.identifier,
       title: issue.title,
       description: issue.description,
       created_at: issue.created_at,
       project_id: issue.project_id,
-      status: issue.status_id
+      status: status
         ? {
-            id: issue.status_id,
-            name: issue.status_name || '',
-            slug: issue.status_slug || '',
-            color: issue.status_color || null,
-            icon: issue.status_icon || null,
+            id: status.id,
+            name: status.name,
+            slug: status.slug,
+            color: status.color,
+            icon: status.icon,
           }
         : null,
-      priority: issue.priority_id
+      priority: priority
         ? {
-            id: issue.priority_id,
-            name: issue.priority_name || '',
-            slug: issue.priority_slug || '',
-            icon: issue.priority_icon || null,
+            id: priority.id,
+            name: priority.name,
+            slug: priority.slug,
+            icon: priority.icon,
           }
         : null,
-    }));
-  } catch (error) {
-    console.error(`プロジェクト ${projectId} のタスク取得エラー:`, error);
-    throw new Error('タスクの取得に失敗しました');
-  }
+    };
+  });
 }
-
-// 以下は将来的に実装するCRUD操作
-/**
- * 新しいタスクを作成します
- * TODO: 実装
- */
-// export async function createIssue() {...}
-
-/**
- * タスクを更新します
- * TODO: 実装
- */
-// export async function updateIssue() {...}
-
-/**
- * タスクを削除します
- * TODO: 実装
- */
-// export async function deleteIssue() {...}

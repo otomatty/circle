@@ -100,5 +100,16 @@ function getRemotePatterns() {
     );
   }
 
+  remotePatterns.push(
+    {
+      protocol: 'https',
+      hostname: 'lh3.googleusercontent.com',
+    },
+    {
+      protocol: 'https',
+      hostname: 'api.dicebear.com',
+    }
+  );
+
   return remotePatterns;
 }

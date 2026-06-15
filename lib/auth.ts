@@ -42,6 +42,17 @@ export function getAuth() {
     process.env.NEXT_PUBLIC_SITE_URL ??
     'http://localhost:3000';
 
+  const googleClientId = env.GOOGLE_CLIENT_ID ?? process.env.GOOGLE_CLIENT_ID;
+  const googleClientSecret =
+    env.GOOGLE_CLIENT_SECRET ?? process.env.GOOGLE_CLIENT_SECRET;
+
+  if (!googleClientId || !googleClientSecret) {
+    throw new Error(
+      'Missing Google OAuth credentials: set GOOGLE_CLIENT_ID and ' +
+        'GOOGLE_CLIENT_SECRET.'
+    );
+  }
+
   return betterAuth({
     baseURL,
     secret:
@@ -57,10 +68,8 @@ export function getAuth() {
     }),
     socialProviders: {
       google: {
-        clientId:
-          env.GOOGLE_CLIENT_ID ?? process.env.GOOGLE_CLIENT_ID ?? '',
-        clientSecret:
-          env.GOOGLE_CLIENT_SECRET ?? process.env.GOOGLE_CLIENT_SECRET ?? '',
+        clientId: googleClientId,
+        clientSecret: googleClientSecret,
       },
     },
     user: {

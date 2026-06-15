@@ -1,6 +1,6 @@
 'use server';
 
-import { asc } from 'drizzle-orm';
+import { asc, sql } from 'drizzle-orm';
 
 import { getDb } from '~/lib/db';
 import {
@@ -57,13 +57,14 @@ export async function getAssigneeCounts(): Promise<Record<string, number>> {
     })
     .from(issueAssignees);
 
-  const allIssues = await db.select({ id: issues.id }).from(issues);
+  const [{ total } = { total: 0 }] = await db
+    .select({ total: sql<number>`count(*)` })
+    .from(issues);
 
   const assignedIssueIds = new Set(assigneeRows.map((row) => row.issueId));
 
   const counts: Record<string, number> = {
-    unassigned: allIssues.filter((issue) => !assignedIssueIds.has(issue.id))
-      .length,
+    unassigned: Number(total) - assignedIssueIds.size,
   };
 
   for (const item of assigneeRows) {

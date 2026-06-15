@@ -1,9 +1,9 @@
 'use server';
 
-import { asc, isNotNull, isNull, sql } from 'drizzle-orm';
+import { asc, eq, isNotNull, isNull, sql } from 'drizzle-orm';
 
 import { getDb } from '~/lib/db';
-import { issues, projects } from '~/lib/db/schema';
+import { issues, projects, statuses } from '~/lib/db/schema';
 import type { Project } from '~/types/projects';
 
 export async function getProjects(): Promise<
@@ -11,7 +11,20 @@ export async function getProjects(): Promise<
 > {
   const db = getDb();
 
-  const rows = await db.select().from(projects).orderBy(asc(projects.name));
+  const rows = await db
+    .select({
+      id: projects.id,
+      name: projects.name,
+      icon: projects.icon,
+      percentComplete: projects.percentComplete,
+      statusId: projects.statusId,
+      statusName: statuses.name,
+      statusIcon: statuses.icon,
+      statusColor: statuses.color,
+    })
+    .from(projects)
+    .leftJoin(statuses, eq(projects.statusId, statuses.id))
+    .orderBy(asc(projects.name));
 
   return rows.map((item) => ({
     id: item.id,
@@ -23,9 +36,9 @@ export async function getProjects(): Promise<
     status: item.statusId
       ? ({
           id: item.statusId,
-          name: item.statusId,
-          icon: 'circle',
-          color: '#4f46e5',
+          name: item.statusName ?? item.statusId,
+          icon: item.statusIcon ?? 'circle',
+          color: item.statusColor ?? '#4f46e5',
         } as Project['status'])
       : undefined,
   }));

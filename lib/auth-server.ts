@@ -74,7 +74,7 @@ export async function updateCurrentProfile(input: {
 }): Promise<User> {
   const sessionUser = await getSessionUser();
   if (!sessionUser) {
-    throw new Error('Not authenticated');
+    throw new Error('認証されていません');
   }
 
   const db = getDb();
@@ -89,7 +89,7 @@ export async function updateCurrentProfile(input: {
 
   const profile = await getCurrentProfile();
   if (!profile) {
-    throw new Error('Failed to update profile');
+    throw new Error('プロフィールの更新に失敗しました');
   }
   return profile;
 }

@@ -11,7 +11,10 @@ export function GoogleSignInButton() {
   const { t } = useTranslation('auth');
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  const next = searchParams.get('next') ?? '/';
+  const rawNext = searchParams.get('next') ?? '/';
+  // Only allow internal, single-slash paths to avoid open redirects.
+  const next =
+    rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/';
 
   return (
     <Button

@@ -1,70 +1,82 @@
 'use server';
 
-import { getSupabase } from '~/lib/supabase/data';
+import { asc, eq, inArray, isNotNull, isNull, sql } from 'drizzle-orm';
+
+import { getCurrentUserTeamIds } from '~/lib/auth-server';
+import { getDb } from '~/lib/db';
+import { issues, projects, statuses, teamProjects } from '~/lib/db/schema';
 import type { Project } from '~/types/projects';
 
 export async function getProjects(): Promise<
   Array<Omit<Project, 'icon'> & { icon: string }>
 > {
-  const supabase = await getSupabase();
+  const db = getDb();
 
-  const { data, error } = await supabase
-    .from('projects')
-    .select('*')
-    .order('name', { ascending: true });
-
-  if (error) {
-    console.error('Projects fetch error:', error);
-    throw new Error('プロジェクトデータの取得に失敗しました');
+  // Scope to projects belonging to the current user's teams (D1 has no RLS).
+  const userTeamIds = await getCurrentUserTeamIds();
+  if (userTeamIds.length === 0) {
+    return [];
   }
 
-  return (data ?? []).map((item) => ({
+  const rows = await db
+    .selectDistinct({
+      id: projects.id,
+      name: projects.name,
+      icon: projects.icon,
+      percentComplete: projects.percentComplete,
+      statusId: projects.statusId,
+      statusName: statuses.name,
+      statusIcon: statuses.icon,
+      statusColor: statuses.color,
+    })
+    .from(projects)
+    .innerJoin(teamProjects, eq(teamProjects.projectId, projects.id))
+    .leftJoin(statuses, eq(projects.statusId, statuses.id))
+    .where(inArray(teamProjects.teamId, userTeamIds))
+    .orderBy(asc(projects.name));
+
+  return rows.map((item) => ({
     id: item.id,
     name: item.name,
     description: '',
     icon: item.icon ?? 'folder',
     color: '#4f46e5',
-    percentComplete: item.percent_complete || 0,
-    status: item.status_id
+    percentComplete: item.percentComplete || 0,
+    status: item.statusId
       ? ({
-          id: item.status_id,
-          name: item.status_id,
-          icon: 'circle',
-          color: '#4f46e5',
+          id: item.statusId,
+          name: item.statusName ?? item.statusId,
+          icon: item.statusIcon ?? 'circle',
+          color: item.statusColor ?? '#4f46e5',
         } as Project['status'])
       : undefined,
   }));
 }
 
 export async function getProjectCounts(): Promise<Record<string, number>> {
-  const supabase = await getSupabase();
+  const db = getDb();
 
-  const { data: projectIssues, error } = await supabase
-    .from('issues')
-    .select('project_id')
-    .not('project_id', 'is', null);
+  const projectIssues = await db
+    .select({
+      projectId: issues.projectId,
+      count: sql<number>`count(*)`,
+    })
+    .from(issues)
+    .where(isNotNull(issues.projectId))
+    .groupBy(issues.projectId);
 
-  if (error) {
-    console.error('Project counts fetch error:', error);
-    throw new Error('プロジェクトカウントの取得に失敗しました');
-  }
-
-  const { count: noProjectCount, error: noProjectError } = await supabase
-    .from('issues')
-    .select('id', { count: 'exact', head: true })
-    .is('project_id', null);
-
-  if (noProjectError) {
-    console.error('No-project count fetch error:', noProjectError);
-  }
+  const [{ count: noProjectCount } = { count: 0 }] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(issues)
+    .where(isNull(issues.projectId));
 
   const counts: Record<string, number> = {
-    'no-project': noProjectCount ?? 0,
+    'no-project': Number(noProjectCount ?? 0),
   };
 
-  for (const item of projectIssues ?? []) {
-    if (item.project_id) {
-      counts[item.project_id] = (counts[item.project_id] || 0) + 1;
+  for (const item of projectIssues) {
+    if (item.projectId) {
+      counts[item.projectId] = Number(item.count);
     }
   }
 

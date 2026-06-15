@@ -4,8 +4,7 @@ import { updateProfileAction } from '~/actions/profile';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
-import { getCurrentProfile } from '~/lib/supabase/profile';
-import { requireUser } from '~/lib/supabase/require-user';
+import { getCurrentProfile, requireUser } from '~/lib/auth-server';
 
 export default async function AccountPage() {
   await requireUser();

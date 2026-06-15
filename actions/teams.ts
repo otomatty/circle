@@ -1,6 +1,15 @@
 'use server';
 
-import { getSupabase } from '~/lib/supabase/data';
+import { asc, eq, inArray } from 'drizzle-orm';
+
+import { getCurrentUserTeamIds } from '~/lib/auth-server';
+import { getDb } from '~/lib/db';
+import {
+  projects,
+  teamMembers,
+  teamProjects,
+  teams,
+} from '~/lib/db/schema';
 import type { Team } from '~/types/teams';
 
 export async function getTeams(): Promise<
@@ -10,109 +19,76 @@ export async function getTeams(): Promise<
     }
   >
 > {
-  const supabase = await getSupabase();
+  const db = getDb();
 
-  const { data: teamsData, error: teamsError } = await supabase
-    .from('teams')
-    .select('*')
-    .order('created_at', { ascending: true });
-
-  if (teamsError) {
-    console.error('Teams fetch error:', teamsError);
-    throw new Error('チームデータの取得に失敗しました');
+  // Scope to the teams the current user belongs to (D1 has no RLS).
+  const userTeamIds = await getCurrentUserTeamIds();
+  if (userTeamIds.length === 0) {
+    return [];
   }
 
-  const teams = await Promise.all(
-    (teamsData ?? []).map(async (team) => {
-      const { data: projectsData, error: projectsError } = await supabase
-        .from('team_projects')
-        .select(
-          `
-          project_id,
-          projects (
-            id,
-            name,
-            icon,
-            status_id,
-            percent_complete
-          )
-        `
-        )
-        .eq('team_id', team.id);
+  const teamsData = await db
+    .select()
+    .from(teams)
+    .where(inArray(teams.id, userTeamIds))
+    .orderBy(asc(teams.createdAt));
 
-      if (projectsError) {
-        console.error('Team projects fetch error:', projectsError);
-      }
-
-      const projects = (projectsData ?? []).flatMap((row) => {
-        const raw = row.projects;
-        const project = Array.isArray(raw) ? raw[0] : raw;
-        if (!project) return [];
-        return [
-          {
-            id: project.id,
-            name: project.name,
-            icon: project.icon ?? 'folder',
-            percentComplete: project.percent_complete || 0,
-            status: project.status_id ? { id: project.status_id } : null,
-          },
-        ];
-      });
-
-      return {
-        id: team.slug,
-        name: team.name,
-        icon: team.icon,
-        color: team.color ?? '#4f46e5',
-        members: [],
-        projects,
-        joined: true,
-      };
+  const projectRows = await db
+    .select({
+      teamId: teamProjects.teamId,
+      id: projects.id,
+      name: projects.name,
+      icon: projects.icon,
+      statusId: projects.statusId,
+      percentComplete: projects.percentComplete,
     })
-  );
+    .from(teamProjects)
+    .innerJoin(projects, eq(teamProjects.projectId, projects.id));
 
-  return teams;
+  return teamsData.map((team) => ({
+    id: team.slug,
+    name: team.name,
+    icon: team.icon,
+    color: team.color ?? '#4f46e5',
+    members: [],
+    projects: projectRows
+      .filter((row) => row.teamId === team.id)
+      .map((project) => ({
+        id: project.id,
+        name: project.name,
+        icon: project.icon ?? 'folder',
+        percentComplete: project.percentComplete || 0,
+        status: project.statusId ? { id: project.statusId } : null,
+      })),
+    joined: true,
+  }));
 }
 
 export async function getTeamSlugById(teamId: string): Promise<string | null> {
-  const supabase = await getSupabase();
-  const { data, error } = await supabase
-    .from('teams')
-    .select('slug')
-    .eq('id', teamId)
-    .maybeSingle();
+  const db = getDb();
+  const rows = await db
+    .select({ slug: teams.slug })
+    .from(teams)
+    .where(eq(teams.id, teamId))
+    .limit(1);
 
-  if (error || !data) {
-    return null;
-  }
-
-  return data.slug;
+  return rows[0]?.slug ?? null;
 }
 
 export async function getFirstTeamSlugForUser(
   userId: string
 ): Promise<string | null> {
-  const supabase = await getSupabase();
-  const { data, error } = await supabase
-    .from('team_members')
-    .select('teams ( slug )')
-    .eq('user_id', userId)
+  const db = getDb();
+
+  // Membership-only: never fall back to an arbitrary team the user does not
+  // belong to (D1 has no RLS). New users are auto-joined to the default team.
+  const rows = await db
+    .select({ slug: teams.slug })
+    .from(teamMembers)
+    .innerJoin(teams, eq(teamMembers.teamId, teams.id))
+    .where(eq(teamMembers.userId, userId))
+    .orderBy(asc(teams.createdAt))
     .limit(1);
 
-  if (!error && data?.[0]?.teams) {
-    const teams = data[0].teams as { slug: string } | { slug: string }[];
-    if (Array.isArray(teams)) {
-      return teams[0]?.slug ?? null;
-    }
-    return teams.slug;
-  }
-
-  const { data: fallback } = await supabase
-    .from('teams')
-    .select('slug')
-    .order('created_at', { ascending: true })
-    .limit(1)
-    .maybeSingle();
-
-  return fallback?.slug ?? null;
+  return rows[0]?.slug ?? null;
 }

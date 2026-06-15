@@ -1,22 +1,20 @@
 'use server';
 
-import { getSupabase } from '~/lib/supabase/data';
+import { asc, sql } from 'drizzle-orm';
+
+import { getDb } from '~/lib/db';
+import { issueLabels, labels } from '~/lib/db/schema';
 import type { LabelInterface } from '~/types/labels';
 
 export async function getLabels(): Promise<LabelInterface[]> {
-  const supabase = await getSupabase();
+  const db = getDb();
 
-  const { data, error } = await supabase
-    .from('labels')
-    .select('*')
-    .order('name', { ascending: true });
+  const rows = await db
+    .select({ id: labels.id, name: labels.name, color: labels.color })
+    .from(labels)
+    .orderBy(asc(labels.name));
 
-  if (error) {
-    console.error('Labels fetch error:', error);
-    throw new Error('ラベルデータの取得に失敗しました');
-  }
-
-  return (data ?? []).map((item) => ({
+  return rows.map((item) => ({
     id: item.id,
     name: item.name,
     color: item.color || '#4f46e5',
@@ -24,24 +22,21 @@ export async function getLabels(): Promise<LabelInterface[]> {
 }
 
 export async function getLabelCounts(): Promise<Record<string, number>> {
-  const supabase = await getSupabase();
+  const db = getDb();
 
-  const { data, error } = await supabase
-    .from('issue_labels')
-    .select('label_id');
-
-  if (error) {
-    console.error('Label counts fetch error:', error);
-    throw new Error('ラベルカウントの取得に失敗しました');
-  }
+  const rows = await db
+    .select({
+      labelId: issueLabels.labelId,
+      count: sql<number>`count(*)`,
+    })
+    .from(issueLabels)
+    .groupBy(issueLabels.labelId);
 
   const counts: Record<string, number> = {};
-
-  for (const item of data ?? []) {
-    if (item.label_id) {
-      counts[item.label_id] = (counts[item.label_id] || 0) + 1;
+  for (const item of rows) {
+    if (item.labelId) {
+      counts[item.labelId] = Number(item.count);
     }
   }
-
   return counts;
 }

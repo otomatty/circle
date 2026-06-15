@@ -3,8 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-import { updateCurrentProfile } from '~/lib/supabase/profile';
-import { requireUser } from '~/lib/supabase/require-user';
+import { requireUser, updateCurrentProfile } from '~/lib/auth-server';
 
 export async function updateProfileAction(formData: FormData) {
   await requireUser();

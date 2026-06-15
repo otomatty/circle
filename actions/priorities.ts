@@ -1,24 +1,22 @@
 'use server';
 
-import { getSupabase } from '~/lib/supabase/data';
+import { asc, eq, sql } from 'drizzle-orm';
+
+import { getDb } from '~/lib/db';
+import { issues, priorities } from '~/lib/db/schema';
 import type { Priority } from '~/types/priorities';
 
 export async function getPriorities(): Promise<
   Array<Omit<Priority, 'icon'> & { icon: string }>
 > {
-  const supabase = await getSupabase();
+  const db = getDb();
 
-  const { data, error } = await supabase
-    .from('priorities')
-    .select('*')
-    .order('display_order', { ascending: true });
+  const rows = await db
+    .select()
+    .from(priorities)
+    .orderBy(asc(priorities.displayOrder));
 
-  if (error) {
-    console.error('Priorities fetch error:', error);
-    throw new Error('優先度データの取得に失敗しました');
-  }
-
-  return (data ?? []).map((item) => ({
+  return rows.map((item) => ({
     id: item.slug,
     name: item.name,
     icon: item.icon ?? 'circle',
@@ -26,27 +24,22 @@ export async function getPriorities(): Promise<
 }
 
 export async function getPriorityCounts(): Promise<Record<string, number>> {
-  const supabase = await getSupabase();
+  const db = getDb();
 
-  const { data, error } = await supabase.from('issues').select(`
-      priority_id,
-      priorities ( slug )
-    `);
-
-  if (error) {
-    console.error('Priority counts fetch error:', error);
-    throw new Error('優先度カウントの取得に失敗しました');
-  }
+  const rows = await db
+    .select({
+      slug: priorities.slug,
+      count: sql<number>`count(*)`,
+    })
+    .from(issues)
+    .innerJoin(priorities, eq(issues.priorityId, priorities.id))
+    .groupBy(priorities.slug);
 
   const counts: Record<string, number> = {};
-
-  for (const item of data ?? []) {
-    const raw = item.priorities;
-    const priority = Array.isArray(raw) ? raw[0] : raw;
-    if (priority?.slug) {
-      counts[priority.slug] = (counts[priority.slug] || 0) + 1;
+  for (const item of rows) {
+    if (item.slug) {
+      counts[item.slug] = Number(item.count);
     }
   }
-
   return counts;
 }

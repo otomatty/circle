@@ -63,10 +63,12 @@ database.sqlite
 *.sqlite3
 *.db
 
-# Supabase
-.supabase/
-supabase/.branches/
-supabase/.temp/
+# Cloudflare / Wrangler
+.wrangler/
+.dev.vars
+
+# Generated seed SQL (regenerate with `bun run seed:d1:sql`)
+drizzle/seed.sql
 
 # Bundle analyzer
 .next/analyze/

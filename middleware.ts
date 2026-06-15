@@ -32,11 +32,12 @@ export function middleware(request: NextRequest) {
   const sessionCookie = getSessionCookie(request);
   const { pathname } = request.nextUrl;
 
-  if (sessionCookie && pathname === pathsConfig.auth.signIn) {
-    const next = request.nextUrl.searchParams.get('next') ?? '/';
-    return NextResponse.redirect(new URL(next, request.url));
-  }
-
+  // NOTE: We intentionally do NOT redirect away from the sign-in page based on
+  // cookie presence. The cookie check is optimistic (no server validation), so
+  // a stale/invalid cookie combined with a sign-in redirect would create an
+  // infinite loop: protected page -> requireUser() redirects to /auth/sign-in
+  // -> middleware sees cookie -> redirects back. Let the sign-in flow settle on
+  // the page itself once the session is fully validated.
   if (!sessionCookie && !isPublicPath(pathname)) {
     const signInUrl = new URL(pathsConfig.auth.signIn, request.url);
     signInUrl.searchParams.set('next', pathname);

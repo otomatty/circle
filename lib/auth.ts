@@ -21,8 +21,15 @@ import { schema, teamMembers, teams } from './db/schema';
 const DEFAULT_TEAM_ID = 'CORE';
 
 function getEnv() {
-  const { env } = getCloudflareContext();
-  return env;
+  const context = getCloudflareContext();
+  if (!context?.env) {
+    throw new Error(
+      'Cloudflare environment context is not available. Ensure you are running ' +
+        'inside a Cloudflare Workers context (or `next dev` with ' +
+        'initOpenNextCloudflareForDev()).'
+    );
+  }
+  return context.env;
 }
 
 export function getAuth() {

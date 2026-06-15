@@ -21,8 +21,8 @@ CREATE TABLE `cycles` (
 	`start_date` text,
 	`end_date` text,
 	`team_id` text,
-	`created_at` text DEFAULT CURRENT_TIMESTAMP,
-	`updated_at` text DEFAULT CURRENT_TIMESTAMP,
+	`created_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+	`updated_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
 	FOREIGN KEY (`team_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
@@ -30,7 +30,7 @@ CREATE TABLE `issue_assignees` (
 	`id` text PRIMARY KEY NOT NULL,
 	`issue_id` text NOT NULL,
 	`user_id` text NOT NULL,
-	`created_at` text DEFAULT CURRENT_TIMESTAMP,
+	`created_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
 	FOREIGN KEY (`issue_id`) REFERENCES `issues`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
@@ -40,7 +40,7 @@ CREATE TABLE `issue_labels` (
 	`id` text PRIMARY KEY NOT NULL,
 	`issue_id` text NOT NULL,
 	`label_id` text NOT NULL,
-	`created_at` text DEFAULT CURRENT_TIMESTAMP,
+	`created_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
 	FOREIGN KEY (`issue_id`) REFERENCES `issues`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`label_id`) REFERENCES `labels`(`id`) ON UPDATE no action ON DELETE cascade
 );
@@ -50,7 +50,7 @@ CREATE TABLE `issue_relations` (
 	`id` text PRIMARY KEY NOT NULL,
 	`parent_issue_id` text NOT NULL,
 	`child_issue_id` text NOT NULL,
-	`created_at` text DEFAULT CURRENT_TIMESTAMP,
+	`created_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
 	FOREIGN KEY (`parent_issue_id`) REFERENCES `issues`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`child_issue_id`) REFERENCES `issues`(`id`) ON UPDATE no action ON DELETE cascade
 );
@@ -67,8 +67,8 @@ CREATE TABLE `issues` (
 	`cycle_id` text,
 	`rank` text,
 	`created_by` text,
-	`created_at` text DEFAULT CURRENT_TIMESTAMP,
-	`updated_at` text DEFAULT CURRENT_TIMESTAMP,
+	`created_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+	`updated_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
 	FOREIGN KEY (`status_id`) REFERENCES `statuses`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`priority_id`) REFERENCES `priorities`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`project_id`) REFERENCES `projects`(`id`) ON UPDATE no action ON DELETE set null,
@@ -82,8 +82,8 @@ CREATE TABLE `labels` (
 	`slug` text NOT NULL,
 	`name` text NOT NULL,
 	`color` text NOT NULL,
-	`created_at` text DEFAULT CURRENT_TIMESTAMP,
-	`updated_at` text DEFAULT CURRENT_TIMESTAMP
+	`created_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+	`updated_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `labels_slug_unique` ON `labels` (`slug`);--> statement-breakpoint
@@ -93,8 +93,8 @@ CREATE TABLE `priorities` (
 	`name` text NOT NULL,
 	`icon` text,
 	`display_order` integer DEFAULT 0,
-	`created_at` text DEFAULT CURRENT_TIMESTAMP,
-	`updated_at` text DEFAULT CURRENT_TIMESTAMP
+	`created_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+	`updated_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `priorities_slug_unique` ON `priorities` (`slug`);--> statement-breakpoint
@@ -104,8 +104,8 @@ CREATE TABLE `projects` (
 	`icon` text,
 	`status_id` text,
 	`percent_complete` integer,
-	`created_at` text DEFAULT CURRENT_TIMESTAMP,
-	`updated_at` text DEFAULT CURRENT_TIMESTAMP,
+	`created_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+	`updated_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
 	FOREIGN KEY (`status_id`) REFERENCES `statuses`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
@@ -129,8 +129,8 @@ CREATE TABLE `statuses` (
 	`color` text,
 	`icon` text,
 	`display_order` integer DEFAULT 0,
-	`created_at` text DEFAULT CURRENT_TIMESTAMP,
-	`updated_at` text DEFAULT CURRENT_TIMESTAMP
+	`created_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+	`updated_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `statuses_slug_unique` ON `statuses` (`slug`);--> statement-breakpoint
@@ -139,8 +139,8 @@ CREATE TABLE `team_members` (
 	`team_id` text NOT NULL,
 	`user_id` text NOT NULL,
 	`role` text DEFAULT 'メンバー',
-	`created_at` text DEFAULT CURRENT_TIMESTAMP,
-	`updated_at` text DEFAULT CURRENT_TIMESTAMP,
+	`created_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+	`updated_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
 	FOREIGN KEY (`team_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
@@ -150,8 +150,8 @@ CREATE TABLE `team_projects` (
 	`id` text PRIMARY KEY NOT NULL,
 	`team_id` text NOT NULL,
 	`project_id` text NOT NULL,
-	`created_at` text DEFAULT CURRENT_TIMESTAMP,
-	`updated_at` text DEFAULT CURRENT_TIMESTAMP,
+	`created_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+	`updated_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
 	FOREIGN KEY (`team_id`) REFERENCES `teams`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`project_id`) REFERENCES `projects`(`id`) ON UPDATE no action ON DELETE cascade
 );
@@ -163,8 +163,8 @@ CREATE TABLE `teams` (
 	`name` text NOT NULL,
 	`icon` text,
 	`color` text,
-	`created_at` text DEFAULT CURRENT_TIMESTAMP,
-	`updated_at` text DEFAULT CURRENT_TIMESTAMP
+	`created_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+	`updated_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `teams_slug_unique` ON `teams` (`slug`);--> statement-breakpoint

@@ -97,7 +97,9 @@ export const verification = sqliteTable('verification', {
 // Application tables
 // ---------------------------------------------------------------------------
 
-const now = sql`CURRENT_TIMESTAMP`;
+// ISO 8601 with milliseconds + 'Z' so values parse via `new Date()` in every
+// browser (SQLite's CURRENT_TIMESTAMP format is rejected by Safari).
+const now = sql`(strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))`;
 
 export const statuses = sqliteTable('statuses', {
   id: text('id').primaryKey(),

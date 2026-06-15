@@ -2,9 +2,11 @@
 
 import { ChevronsUpDown, LogOut } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 
-import { signOut } from '~/actions/auth';
+import { authClient } from '~/lib/auth-client';
+import pathsConfig from '~/config/paths.config';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,6 +36,7 @@ export function UserMenu({
   teamInitials,
 }: UserMenuProps) {
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
   const initials =
     teamInitials ??
     (profile.name
@@ -95,7 +98,9 @@ export function UserMenu({
               disabled={isPending}
               onClick={() => {
                 startTransition(async () => {
-                  await signOut();
+                  await authClient.signOut();
+                  router.push(pathsConfig.auth.signIn);
+                  router.refresh();
                 });
               }}
             >

@@ -1,24 +1,22 @@
 'use server';
 
-import { getSupabase } from '~/lib/supabase/data';
+import { asc, eq, sql } from 'drizzle-orm';
+
+import { getDb } from '~/lib/db';
+import { issues, statuses } from '~/lib/db/schema';
 import type { Status } from '~/types/status';
 
 export async function getStatuses(): Promise<
   Array<Omit<Status, 'icon'> & { icon: string }>
 > {
-  const supabase = await getSupabase();
+  const db = getDb();
 
-  const { data, error } = await supabase
-    .from('statuses')
-    .select('*')
-    .order('display_order', { ascending: true });
+  const rows = await db
+    .select()
+    .from(statuses)
+    .orderBy(asc(statuses.displayOrder));
 
-  if (error) {
-    console.error('Statuses fetch error:', error);
-    throw new Error('ステータスデータの取得に失敗しました');
-  }
-
-  return (data ?? []).map((item) => ({
+  return rows.map((item) => ({
     id: item.slug,
     name: item.name,
     icon: item.icon ?? 'circle',
@@ -27,27 +25,22 @@ export async function getStatuses(): Promise<
 }
 
 export async function getStatusCounts(): Promise<Record<string, number>> {
-  const supabase = await getSupabase();
+  const db = getDb();
 
-  const { data, error } = await supabase.from('issues').select(`
-      status_id,
-      statuses ( slug )
-    `);
-
-  if (error) {
-    console.error('Status counts fetch error:', error);
-    throw new Error('ステータスカウントの取得に失敗しました');
-  }
+  const rows = await db
+    .select({
+      slug: statuses.slug,
+      count: sql<number>`count(*)`,
+    })
+    .from(issues)
+    .innerJoin(statuses, eq(issues.statusId, statuses.id))
+    .groupBy(statuses.slug);
 
   const counts: Record<string, number> = {};
-
-  for (const item of data ?? []) {
-    const raw = item.statuses;
-    const status = Array.isArray(raw) ? raw[0] : raw;
-    if (status?.slug) {
-      counts[status.slug] = (counts[status.slug] || 0) + 1;
+  for (const item of rows) {
+    if (item.slug) {
+      counts[item.slug] = Number(item.count);
     }
   }
-
   return counts;
 }

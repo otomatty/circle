@@ -14,7 +14,7 @@ import { getStatuses } from '~/actions/status';
 import { getProjects } from '~/actions/projects';
 import { getLabels } from '~/actions/labels';
 import { getUsers } from '~/actions/users';
-import { getCurrentProfile } from '~/lib/supabase/profile';
+import { getCurrentProfile } from '~/lib/auth-server';
 import { AppSidebarClient } from './app-sidebar-client';
 import type { LucideIcon } from 'lucide-react';
 

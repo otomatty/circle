@@ -1,15 +1,17 @@
 /**
- * Next.js middleware — Supabase session refresh and route protection.
+ * Next.js middleware — Better Auth route protection (Cloudflare-native).
+ *
+ * Uses an optimistic session-cookie check at the edge (no DB call). Full
+ * session validation happens in Server Components / Server Actions.
  */
 
+import { getSessionCookie } from 'better-auth/cookies';
 import { type NextRequest, NextResponse } from 'next/server';
 
 import pathsConfig from '~/config/paths.config';
-import { isSupabaseConfigured } from '~/lib/supabase/env';
-import { updateSession } from '~/lib/supabase/middleware';
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|images|locales|assets|api/*).*)'],
+  matcher: ['/((?!_next/static|_next/image|images|locales|assets|api/).*)'],
 };
 
 const PUBLIC_PATH_PREFIXES = [
@@ -26,24 +28,20 @@ function isPublicPath(pathname: string): boolean {
   );
 }
 
-export async function middleware(request: NextRequest) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.next();
-  }
-
-  const { supabaseResponse, user } = await updateSession(request);
+export function middleware(request: NextRequest) {
+  const sessionCookie = getSessionCookie(request);
   const { pathname } = request.nextUrl;
 
-  if (user && pathname === pathsConfig.auth.signIn) {
+  if (sessionCookie && pathname === pathsConfig.auth.signIn) {
     const next = request.nextUrl.searchParams.get('next') ?? '/';
     return NextResponse.redirect(new URL(next, request.url));
   }
 
-  if (!user && !isPublicPath(pathname)) {
+  if (!sessionCookie && !isPublicPath(pathname)) {
     const signInUrl = new URL(pathsConfig.auth.signIn, request.url);
     signInUrl.searchParams.set('next', pathname);
     return NextResponse.redirect(signInUrl);
   }
 
-  return supabaseResponse;
+  return NextResponse.next();
 }

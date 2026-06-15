@@ -1,6 +1,8 @@
+import { asc, eq } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
 
-import { getSupabase } from '~/lib/supabase/data';
+import { getDb } from '~/lib/db';
+import { teams } from '~/lib/db/schema';
 
 export default async function TeamPage({
   params,
@@ -8,21 +10,20 @@ export default async function TeamPage({
   params: Promise<{ orgId: string }>;
 }) {
   const { orgId: teamSlug } = await params;
-  const supabase = await getSupabase();
+  const db = getDb();
 
-  const { data: team } = await supabase
-    .from('teams')
-    .select('id')
-    .eq('slug', teamSlug)
-    .maybeSingle();
+  const [team] = await db
+    .select({ id: teams.id })
+    .from(teams)
+    .where(eq(teams.slug, teamSlug))
+    .limit(1);
 
   if (!team) {
-    const { data: firstTeam } = await supabase
-      .from('teams')
-      .select('slug')
-      .order('created_at', { ascending: true })
-      .limit(1)
-      .maybeSingle();
+    const [firstTeam] = await db
+      .select({ slug: teams.slug })
+      .from(teams)
+      .orderBy(asc(teams.createdAt))
+      .limit(1);
 
     if (firstTeam?.slug) {
       return redirect(`/${firstTeam.slug}`);

@@ -4,7 +4,7 @@ import { useTransition } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 
-import { signInWithGoogle } from '~/actions/auth';
+import { authClient } from '~/lib/auth-client';
 import { Button } from '~/components/ui/button';
 
 export function GoogleSignInButton() {
@@ -20,7 +20,10 @@ export function GoogleSignInButton() {
       disabled={isPending}
       onClick={() => {
         startTransition(async () => {
-          await signInWithGoogle(next);
+          await authClient.signIn.social({
+            provider: 'google',
+            callbackURL: next,
+          });
         });
       }}
     >

@@ -75,6 +75,11 @@ const config = {
 
 export default config;
 
+// Cloudflare D1/KV バインディングを `next dev` でも利用可能にする。
+// （`getCloudflareContext()` を開発サーバーで動作させるために必要）
+import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare';
+initOpenNextCloudflareForDev();
+
 /**
  * リモート画像のパターンを取得する関数
  *

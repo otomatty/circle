@@ -10,5 +10,16 @@
   },
   "vars": {
     "NEXT_PUBLIC_SITE_URL": "https://your-app.pages.dev"
-  }
+  },
+  // Create the database once with `bunx wrangler d1 create circle` and paste the
+  // returned database_id below. Apply migrations with
+  // `bunx wrangler d1 migrations apply circle --local|--remote`.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "circle",
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "migrations_dir": "drizzle/migrations"
+    }
+  ]
 }

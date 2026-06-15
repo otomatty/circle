@@ -42,6 +42,26 @@ export async function requireUser(): Promise<SessionUser> {
   return user;
 }
 
+/**
+ * Team ids the current user belongs to. Used to scope queries by membership
+ * now that D1 has no row-level security. Returns an empty array when there is
+ * no authenticated user.
+ */
+export async function getCurrentUserTeamIds(): Promise<string[]> {
+  const sessionUser = await getSessionUser();
+  if (!sessionUser) {
+    return [];
+  }
+
+  const db = getDb();
+  const rows = await db
+    .select({ teamId: teamMembers.teamId })
+    .from(teamMembers)
+    .where(eq(teamMembers.userId, sessionUser.id));
+
+  return rows.map((row) => row.teamId);
+}
+
 export async function getCurrentProfile(): Promise<User | null> {
   const sessionUser = await getSessionUser();
   if (!sessionUser) {

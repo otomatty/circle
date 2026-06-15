@@ -1,9 +1,10 @@
 'use server';
 
-import { asc, eq, isNotNull, isNull, sql } from 'drizzle-orm';
+import { asc, eq, inArray, isNotNull, isNull, sql } from 'drizzle-orm';
 
+import { getCurrentUserTeamIds } from '~/lib/auth-server';
 import { getDb } from '~/lib/db';
-import { issues, projects, statuses } from '~/lib/db/schema';
+import { issues, projects, statuses, teamProjects } from '~/lib/db/schema';
 import type { Project } from '~/types/projects';
 
 export async function getProjects(): Promise<
@@ -11,8 +12,14 @@ export async function getProjects(): Promise<
 > {
   const db = getDb();
 
+  // Scope to projects belonging to the current user's teams (D1 has no RLS).
+  const userTeamIds = await getCurrentUserTeamIds();
+  if (userTeamIds.length === 0) {
+    return [];
+  }
+
   const rows = await db
-    .select({
+    .selectDistinct({
       id: projects.id,
       name: projects.name,
       icon: projects.icon,
@@ -23,7 +30,9 @@ export async function getProjects(): Promise<
       statusColor: statuses.color,
     })
     .from(projects)
+    .innerJoin(teamProjects, eq(teamProjects.projectId, projects.id))
     .leftJoin(statuses, eq(projects.statusId, statuses.id))
+    .where(inArray(teamProjects.teamId, userTeamIds))
     .orderBy(asc(projects.name));
 
   return rows.map((item) => ({

@@ -1,7 +1,8 @@
 'use server';
 
-import { asc, eq } from 'drizzle-orm';
+import { asc, eq, inArray } from 'drizzle-orm';
 
+import { getCurrentUserTeamIds } from '~/lib/auth-server';
 import { getDb } from '~/lib/db';
 import {
   projects,
@@ -20,9 +21,16 @@ export async function getTeams(): Promise<
 > {
   const db = getDb();
 
+  // Scope to the teams the current user belongs to (D1 has no RLS).
+  const userTeamIds = await getCurrentUserTeamIds();
+  if (userTeamIds.length === 0) {
+    return [];
+  }
+
   const teamsData = await db
     .select()
     .from(teams)
+    .where(inArray(teams.id, userTeamIds))
     .orderBy(asc(teams.createdAt));
 
   const projectRows = await db
@@ -72,22 +80,15 @@ export async function getFirstTeamSlugForUser(
 ): Promise<string | null> {
   const db = getDb();
 
+  // Membership-only: never fall back to an arbitrary team the user does not
+  // belong to (D1 has no RLS). New users are auto-joined to the default team.
   const rows = await db
     .select({ slug: teams.slug })
     .from(teamMembers)
     .innerJoin(teams, eq(teamMembers.teamId, teams.id))
     .where(eq(teamMembers.userId, userId))
-    .limit(1);
-
-  if (rows[0]?.slug) {
-    return rows[0].slug;
-  }
-
-  const fallback = await db
-    .select({ slug: teams.slug })
-    .from(teams)
     .orderBy(asc(teams.createdAt))
     .limit(1);
 
-  return fallback[0]?.slug ?? null;
+  return rows[0]?.slug ?? null;
 }

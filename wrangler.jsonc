@@ -9,7 +9,7 @@
     "binding": "ASSETS"
   },
   "vars": {
-    "NEXT_PUBLIC_SITE_URL": "https://your-app.pages.dev"
+    "NEXT_PUBLIC_SITE_URL": "https://circle.saedgewell.workers.dev"
   },
   // Create the database once with `bunx wrangler d1 create circle` and paste the
   // returned database_id below. Apply migrations with
@@ -18,7 +18,7 @@
     {
       "binding": "DB",
       "database_name": "circle",
-      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "database_id": "abd7faad-080c-4fcb-b92b-998d49ed2066",
       "migrations_dir": "drizzle/migrations"
     }
   ]

@@ -22,7 +22,7 @@ export function IssueLine({
 }: { issue: Issue; layoutId?: boolean }) {
   return (
     <motion.div
-      //href={`/lndev-ui/issue/${issue.identifier}`}
+      //href={`/circle/issue/${issue.identifier}`}
       {...(layoutId && { layoutId: `issue-line-${issue.identifier}` })}
       className="w-full flex items-center justify-start h-11 px-6 hover:bg-sidebar/50"
     >

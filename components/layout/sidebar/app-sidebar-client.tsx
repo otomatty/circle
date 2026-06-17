@@ -4,21 +4,17 @@ import {
   Box,
   ContactRound,
   FolderKanban,
-  Github,
   Inbox,
   UserRound,
-  X,
   type LucideIcon,
 } from 'lucide-react';
 import * as React from 'react';
-import Link from 'next/link';
 
 import { HelpButton } from '~/components/layout/sidebar/help-button';
 import { NavInbox } from '~/components/layout/sidebar/nav-inbox';
 import { NavTeams } from '~/components/layout/sidebar/nav-teams';
 import { NavWorkspace } from '~/components/layout/sidebar/nav-workspace';
 import { UserMenu } from '~/components/account/user-menu';
-import { Button } from '~/components/ui/button';
 import {
   Sidebar,
   SidebarContent,
@@ -81,8 +77,6 @@ export function AppSidebarClient({
   workspaceData,
   ...props
 }: AppSidebarClientProps) {
-  const [open, setOpen] = React.useState(true);
-
   // atomの更新関数を取得
   const setStatuses = useSetAtom(statusesAtom);
   const setProjects = useSetAtom(projectsAtom);
@@ -170,53 +164,8 @@ export function AppSidebarClient({
         <NavTeams items={teams} />
       </SidebarContent>
       <SidebarFooter>
-        <div className="w-full flex flex-col gap-2">
-          {open && (
-            <div className="group/sidebar relative flex flex-col gap-2 rounded-lg border p-4 text-sm w-full">
-              <button
-                className="absolute top-2.5 right-2 z-10 cursor-pointer"
-                onClick={() => setOpen(!open)}
-                type="button"
-              >
-                <X className="size-4" />
-              </button>
-              <div className="text-balance text-lg font-semibold leading-tight group-hover/sidebar:underline">
-                lndevによる優れたコンポーネント
-              </div>
-              <div>
-                開発プロセスを効率化するための、小さくて優れたコンポーネントの楽しいコレクション。
-              </div>
-              <Link
-                target="_blank"
-                rel="noreferrer"
-                className="absolute inset-0"
-                href="https://ui.lndev.me"
-              >
-                <span className="sr-only">Vercelにデプロイ</span>
-              </Link>
-              <Button size="sm" className="w-full">
-                <Link
-                  href="https://ui.lndev.me"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  ui.lndev.me
-                </Link>
-              </Button>
-            </div>
-          )}
-          <div className="w-full flex items-center justify-between">
-            <HelpButton />
-            <Button size="icon" variant="secondary" asChild>
-              <Link
-                href="https://github.com/ln-dev7/circle"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Github className="size-4" />
-              </Link>
-            </Button>
-          </div>
+        <div className="w-full flex items-center justify-between">
+          <HelpButton />
         </div>
       </SidebarFooter>
     </Sidebar>

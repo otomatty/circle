@@ -59,7 +59,7 @@ export function CreateNewIssue() {
     let identifier = Math.floor(Math.random() * 999)
       .toString()
       .padStart(3, '0');
-    while (identifiers.includes(`LNUI-${identifier}`)) {
+    while (identifiers.includes(`CIR-${identifier}`)) {
       identifier = Math.floor(Math.random() * 999)
         .toString()
         .padStart(3, '0');
@@ -92,7 +92,7 @@ export function CreateNewIssue() {
 
     return {
       id: uuidv4(),
-      identifier: `LNUI-${identifier}`,
+      identifier: `CIR-${identifier}`,
       title: '',
       description: '',
       status: initialStatus,

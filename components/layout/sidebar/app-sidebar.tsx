@@ -41,17 +41,17 @@ const data = {
   workspace: [
     {
       name: 'チーム',
-      url: '/lndev-ui/teams',
+      url: '/circle/teams',
       icon: 'ContactRound', // コンポーネント関数からアイコン名の文字列に変更
     },
     {
       name: 'プロジェクト',
-      url: '/lndev-ui/projects',
+      url: '/circle/projects',
       icon: 'Box', // コンポーネント関数からアイコン名の文字列に変更
     },
     {
       name: 'メンバー',
-      url: '/lndev-ui/members',
+      url: '/circle/members',
       icon: 'UserRound', // コンポーネント関数からアイコン名の文字列に変更
     },
   ] as NavItem[],

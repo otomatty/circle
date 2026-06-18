@@ -13,9 +13,11 @@ import { Switch } from '~/components/ui/switch';
 import { Label } from '~/components/ui/label';
 import { Edit } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
+import { useParams } from 'next/navigation';
 import type { Issue } from '~/types/issues';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { issuesAtom, addIssueAtom } from '~/store/issues-store';
+import { addIssueAtom } from '~/store/issues-store';
+import { createIssue as createIssueAction } from '~/actions/issues';
 import { statusesAtom } from '~/store/status-atoms';
 import { prioritiesAtom } from '~/store/priority-atoms';
 import type { Status } from '~/types/status';
@@ -33,7 +35,6 @@ import { PrioritySelector } from '../priority-selector';
 import { AssigneeSelector } from './assignee-selector';
 import { ProjectSelector } from './project-selector';
 import { LabelSelector } from './label-selector';
-import { ranks } from '~/mock-data/issues';
 
 /**
  * 新規課題作成コンポーネント
@@ -49,33 +50,23 @@ export function CreateNewIssue() {
   const openModal = useSetAtom(openCreateIssueModalAtom);
   const closeModal = useSetAtom(closeCreateIssueModalAtom);
   const addIssue = useSetAtom(addIssueAtom);
-  const allIssues = useAtomValue(issuesAtom);
   const statuses = useAtomValue(statusesAtom);
   const priorities = useAtomValue(prioritiesAtom);
 
-  // ユニークな課題ID（identifier）を生成するヘルパー関数
-  const generateUniqueIdentifier = useCallback(() => {
-    const identifiers = allIssues.map((issue: Issue) => issue.identifier);
-    let identifier = Math.floor(Math.random() * 999)
-      .toString()
-      .padStart(3, '0');
-    while (identifiers.includes(`CIR-${identifier}`)) {
-      identifier = Math.floor(Math.random() * 999)
-        .toString()
-        .padStart(3, '0');
-    }
-    return identifier;
-  }, [allIssues]);
+  // Team slug comes from the route (/[orgId]/team/[teamId]/all). The identifier
+  // and rank are minted server-side, so they are not generated here.
+  const params = useParams();
+  const teamId =
+    typeof params?.teamId === 'string' ? params.teamId : undefined;
 
-  // 新規課題のデフォルトデータを作成する関数
+  // Build the default form data for a new issue. The identifier and rank are
+  // finalized on the server, so placeholders are used here.
   const createDefaultData = useCallback((): Issue => {
-    const identifier = generateUniqueIdentifier();
     const initialStatus: Status | undefined =
       defaultStatus || statuses.find((s) => s.id === 'to-do');
     const initialPriority: Priority | undefined = priorities.find(
       (p) => p.id === 'no-priority'
     );
-    const initialRank = ranks[ranks.length - 1];
 
     if (!initialStatus) {
       console.error('デフォルトステータス "to-do" が見つかりません！');
@@ -85,14 +76,10 @@ export function CreateNewIssue() {
       console.error('デフォルト優先度 "no-priority" が見つかりません！');
       throw new Error('デフォルト優先度の設定エラー。');
     }
-    if (initialRank === undefined) {
-      console.error('デフォルトランクが見つかりません！');
-      throw new Error('デフォルトランクの設定エラー。');
-    }
 
     return {
       id: uuidv4(),
-      identifier: `CIR-${identifier}`,
+      identifier: '',
       title: '',
       description: '',
       status: initialStatus,
@@ -103,9 +90,9 @@ export function CreateNewIssue() {
       cycleId: '',
       project: undefined,
       subissues: [],
-      rank: initialRank,
+      rank: '',
     };
-  }, [defaultStatus, generateUniqueIdentifier, statuses, priorities]);
+  }, [defaultStatus, statuses, priorities]);
 
   // Initialize form state with null
   const [addIssueForm, setAddIssueForm] = useState<Issue | null>(null);
@@ -128,8 +115,10 @@ export function CreateNewIssue() {
     // Add statuses and priorities to dependency array
   }, [isOpen, statuses, priorities, createDefaultData, closeModal]);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // Function to create issue (add guard for null addIssueForm)
-  const createIssue = () => {
+  const createIssue = async () => {
     if (!addIssueForm) {
       toast.error('フォームが初期化されていません。');
       return;
@@ -138,8 +127,33 @@ export function CreateNewIssue() {
       toast.error('タイトルは必須です');
       return;
     }
+
+    setIsSubmitting(true);
+    let createdIssue: Issue;
+    try {
+      // Persist to D1 (identifier / rank minted server-side) and get the
+      // confirmed issue back.
+      const dto = await createIssueAction({
+        title: addIssueForm.title,
+        description: addIssueForm.description,
+        statusId: addIssueForm.status.id,
+        priorityId: addIssueForm.priority.id,
+        assigneeId: addIssueForm.assignees?.id ?? null,
+        labelIds: addIssueForm.labels.map((label) => label.id),
+        projectId: addIssueForm.project?.id ?? null,
+        teamId,
+      });
+      createdIssue = dto as unknown as Issue;
+    } catch (error) {
+      console.error('Failed to create issue', error);
+      toast.error('課題の作成に失敗しました');
+      setIsSubmitting(false);
+      return;
+    }
+    setIsSubmitting(false);
+
     toast.success('課題が作成されました');
-    addIssue(addIssueForm);
+    addIssue(createdIssue);
     if (!createMore) {
       closeModal();
     } else {
@@ -295,8 +309,9 @@ export function CreateNewIssue() {
             <Button
               size="sm"
               onClick={createIssue} // onClick handler already has null check
+              disabled={isSubmitting}
             >
-              課題を作成
+              {isSubmitting ? '作成中...' : '課題を作成'}
             </Button>
           </div>
         </DialogContent>

@@ -1,16 +1,17 @@
 'use client';
 
-import { useAtomValue } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { statusesAtom } from '~/store/status-atoms';
-import { issuesByStatusAtom } from '~/store/issues-store';
+import { issuesAtom, issuesByStatusAtom } from '~/store/issues-store';
 import { viewTypeAtom } from '~/store/view-store';
-import type { FC } from 'react';
+import { type FC, useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { GroupIssues } from './group-issues';
 import { SearchIssues } from './search-issues';
 import { CustomDragLayer } from './issue-grid';
 import { cn } from '~/lib/utils/cn';
+import type { Issue } from '~/types/issues';
 
 /**
  * 全課題表示コンポーネント
@@ -18,10 +19,23 @@ import { cn } from '~/lib/utils/cn';
  * 検索モードとグループ表示モード（リスト/ボード）を切り替えられます。
  * ドラッグ&ドロップ機能も統合されています。
  */
-export default function AllIssues() {
+export default function AllIssues({
+  initialIssues = [],
+}: {
+  initialIssues?: Issue[];
+}) {
   const viewType = useAtomValue(viewTypeAtom);
+  const setIssues = useSetAtom(issuesAtom);
   const isSearchOpen = false;
   const searchQuery = '';
+
+  // Hydrate the store with the team's issues fetched from D1 on the server.
+  // Runs whenever the route (and therefore the provided data) changes.
+  useEffect(() => {
+    setIssues(
+      [...initialIssues].sort((a, b) => (b.rank ?? '').localeCompare(a.rank ?? ''))
+    );
+  }, [initialIssues, setIssues]);
 
   const isSearching = isSearchOpen && searchQuery.trim() !== '';
   const isViewTypeGrid = viewType === 'grid';

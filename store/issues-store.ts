@@ -1,6 +1,14 @@
 import { atom } from 'jotai';
 import { atomFamily } from 'jotai/utils'; // パラメータ付きatomのために追加
-import { issues as mockIssues } from '../mock-data/issues'; // Issue と groupIssuesByStatus を削除
+import { toast } from 'sonner';
+import {
+  addIssueLabel as addIssueLabelAction,
+  deleteIssue as deleteIssueAction,
+  removeIssueLabel as removeIssueLabelAction,
+  updateIssueAssignee as updateIssueAssigneeAction,
+  updateIssuePriority as updateIssuePriorityAction,
+  updateIssueStatus as updateIssueStatusAction,
+} from '~/actions/issues';
 import type { Issue } from '~/types/issues'; // Issue のインポート元を変更
 import { groupIssuesByStatus } from '~/utils/issue-utils'; // groupIssuesByStatus のインポート元を変更
 import type { LabelInterface } from '../types/labels';
@@ -9,15 +17,25 @@ import type { Project } from '../types/projects';
 import type { Status } from '../types/status';
 import type { User } from '../types/users';
 
+/**
+ * Server Action を発火し、失敗時にユーザーへトーストで通知するヘルパー。
+ * 楽観的更新（Jotai 側）はそのまま残し、リロード時にサーバーの確定状態へ収束する。
+ */
+function persist(promise: Promise<unknown>, errorMessage: string): void {
+  promise.catch((error) => {
+    console.error(errorMessage, error);
+    toast.error(errorMessage);
+  });
+}
+
 // --- Base Atoms ---
 
 /**
  * @description すべての Issue データを含む Atom。
- *              初期値はモックデータから取得し、rank で降順ソートされます。
+ *              初期値は空配列で、ボード（Server Component）が D1 から取得した
+ *              データで `useEffect` を介してハイドレートします。
  */
-export const issuesAtom = atom<Issue[]>(
-  mockIssues.sort((a, b) => b.rank.localeCompare(a.rank))
-);
+export const issuesAtom = atom<Issue[]>([]);
 
 /**
  * @description issuesAtom から派生し、ステータスごとに Issue をグループ化する Atom。
@@ -71,6 +89,7 @@ export const deleteIssueAtom = atom(null, (get, set, id: string) => {
   const currentIssues = get(issuesAtom);
   const updatedIssues = currentIssues.filter((issue) => issue.id !== id);
   set(issuesAtom, updatedIssues);
+  persist(deleteIssueAction(id), '課題の削除に失敗しました');
 });
 
 /**
@@ -89,6 +108,10 @@ export const updateIssueStatusAtom = atom(
       id: issueId,
       updatedIssueData: { status: newStatus },
     });
+    persist(
+      updateIssueStatusAction(issueId, newStatus.id),
+      'ステータスの更新に失敗しました'
+    );
   }
 );
 
@@ -107,6 +130,10 @@ export const updateIssuePriorityAtom = atom(
       id: issueId,
       updatedIssueData: { priority: newPriority },
     });
+    persist(
+      updateIssuePriorityAction(issueId, newPriority.id),
+      '優先度の更新に失敗しました'
+    );
   }
 );
 
@@ -125,6 +152,10 @@ export const updateIssueAssigneeAtom = atom(
       id: issueId,
       updatedIssueData: { assignees: newAssignee },
     });
+    persist(
+      updateIssueAssigneeAction(issueId, newAssignee?.id ?? null),
+      '担当者の更新に失敗しました'
+    );
   }
 );
 
@@ -147,6 +178,10 @@ export const addIssueLabelAtom = atom(
         id: issueId,
         updatedIssueData: { labels: updatedLabels },
       });
+      persist(
+        addIssueLabelAction(issueId, label.id),
+        'ラベルの追加に失敗しました'
+      );
     }
   }
 );
@@ -167,6 +202,10 @@ export const removeIssueLabelAtom = atom(
         id: issueId,
         updatedIssueData: { labels: updatedLabels },
       });
+      persist(
+        removeIssueLabelAction(issueId, labelId),
+        'ラベルの削除に失敗しました'
+      );
     }
   }
 );

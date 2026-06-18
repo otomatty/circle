@@ -20,10 +20,10 @@ export const statusUserColors = {
 
 export const users: User[] = [
   {
-    id: 'ln',
-    name: 'leonel.ngoya',
-    avatarUrl: avatarUrl('ln'),
-    email: 'leonelngoya@gmail.com',
+    id: 'liam',
+    name: 'liam.foster',
+    avatarUrl: avatarUrl('liamfoster'),
+    email: 'liamfoster@gmail.com',
     status: 'オンライン',
     role: '管理者',
     joinedDate: '2022-01-01',

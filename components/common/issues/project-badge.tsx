@@ -13,7 +13,7 @@ import { getIconFromString } from '~/utils/icon-utils';
 export function ProjectBadge({ project }: { project: Project }) {
   return (
     <Link
-      href={'/lndev-ui/projects/all'}
+      href={'/circle/projects/all'}
       className="flex items-center justify-center gap-.5"
     >
       <Badge

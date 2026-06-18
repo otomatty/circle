@@ -31,7 +31,7 @@ export const cycles: Cycle[] = [
     id: '44',
     number: 44,
     name: 'スプリント 44 - コア機能強化',
-    teamId: 'lndev-core',
+    teamId: 'CORE',
     startDate: '2025-03-10',
     endDate: '2025-03-24',
     progress: 0,

@@ -33,7 +33,7 @@ export interface Project {
 export const projects: Project[] = [
   {
     id: '1',
-    name: 'LNDev UI - コアコンポーネント',
+    name: 'Circle UI - コアコンポーネント',
     status: getStatusByIndex(0),
     icon: Cuboid,
     percentComplete: 80,
@@ -41,7 +41,7 @@ export const projects: Project[] = [
   },
   {
     id: '2',
-    name: 'LNDev UI - テーマ設定',
+    name: 'Circle UI - テーマ設定',
     status: getStatusByIndex(1),
     icon: Blocks,
     percentComplete: 50,
@@ -49,7 +49,7 @@ export const projects: Project[] = [
   },
   {
     id: '3',
-    name: 'LNDev UI - モーダル',
+    name: 'Circle UI - モーダル',
     status: getStatusByIndex(2),
     icon: Vault,
     percentComplete: 0,
@@ -57,7 +57,7 @@ export const projects: Project[] = [
   },
   {
     id: '4',
-    name: 'LNDev UI - ナビゲーション',
+    name: 'Circle UI - ナビゲーション',
     status: getStatusByIndex(3),
     icon: BrickWall,
     percentComplete: 0,
@@ -65,7 +65,7 @@ export const projects: Project[] = [
   },
   {
     id: '5',
-    name: 'LNDev UI - レイアウト',
+    name: 'Circle UI - レイアウト',
     status: getStatusByIndex(4),
     icon: Wallpaper,
     percentComplete: 0,
@@ -73,7 +73,7 @@ export const projects: Project[] = [
   },
   {
     id: '6',
-    name: 'LNDev UI - サイドバー',
+    name: 'Circle UI - サイドバー',
     status: getStatusByIndex(5),
     icon: TrafficCone,
     percentComplete: 0,
@@ -81,7 +81,7 @@ export const projects: Project[] = [
   },
   {
     id: '7',
-    name: 'LNDev UI - カード',
+    name: 'Circle UI - カード',
     status: getStatusByIndex(1),
     icon: Grid2X2,
     percentComplete: 0,
@@ -89,7 +89,7 @@ export const projects: Project[] = [
   },
   {
     id: '8',
-    name: 'LNDev UI - ツールチップ',
+    name: 'Circle UI - ツールチップ',
     status: getStatusByIndex(2),
     icon: Bomb,
     percentComplete: 0,
@@ -97,7 +97,7 @@ export const projects: Project[] = [
   },
   {
     id: '9',
-    name: 'LNDev UI - ドロップダウン',
+    name: 'Circle UI - ドロップダウン',
     status: getStatusByIndex(3),
     icon: Shapes,
     percentComplete: 50,

@@ -104,7 +104,7 @@ export function NavTeams({ items }: { items: Team[] }) {
                   <SidebarMenuSub>
                     <SidebarMenuSubItem>
                       <SidebarMenuSubButton asChild>
-                        <Link href={`/lndev-ui/team/${item.id}/all`}>
+                        <Link href={`/circle/team/${item.id}/all`}>
                           <CopyMinus size={14} />
                           <span>課題</span>
                         </Link>
@@ -112,7 +112,7 @@ export function NavTeams({ items }: { items: Team[] }) {
                     </SidebarMenuSubItem>
                     <SidebarMenuSubItem>
                       <SidebarMenuSubButton asChild>
-                        <Link href={`/lndev-ui/team/${item.id}/all`}>
+                        <Link href={`/circle/team/${item.id}/all`}>
                           <ChartPie size={14} />
                           <span>サイクル</span>
                         </Link>
@@ -120,7 +120,7 @@ export function NavTeams({ items }: { items: Team[] }) {
                     </SidebarMenuSubItem>
                     <SidebarMenuSubItem>
                       <SidebarMenuSubButton asChild>
-                        <Link href="/lndev-ui/projects">
+                        <Link href="/circle/projects">
                           <Box size={14} />
                           <span>プロジェクト</span>
                         </Link>

@@ -78,7 +78,7 @@ generateIssuesRanks();
 export const issues: Issue[] = [
   {
     id: '1',
-    identifier: 'LNUI-101',
+    identifier: 'CIR-101',
     title: 'アクセシビリティ準拠のためにButtonコンポーネントをリファクタリング',
     description: '',
     status: getStatusByIndex(5),
@@ -92,7 +92,7 @@ export const issues: Issue[] = [
   },
   {
     id: '2',
-    identifier: 'LNUI-204',
+    identifier: 'CIR-204',
     title: 'よりスムーズなUI遷移のためにアニメーションを最適化',
     description: '',
     status: getStatusByIndex(2),
@@ -106,7 +106,7 @@ export const issues: Issue[] = [
   },
   {
     id: '3',
-    identifier: 'LNUI-309',
+    identifier: 'CIR-309',
     title: 'システム設定連携のダークモード切り替え機能を実装',
     description: '',
     status: getStatusByIndex(3),
@@ -120,7 +120,7 @@ export const issues: Issue[] = [
   },
   {
     id: '4',
-    identifier: 'LNUI-415',
+    identifier: 'CIR-415',
     title: 'フォーカストラップ機能を持つ新しいモーダルシステムを設計',
     description: '',
     status: getStatusByIndex(1),
@@ -134,7 +134,7 @@ export const issues: Issue[] = [
   },
   {
     id: '5',
-    identifier: 'LNUI-501',
+    identifier: 'CIR-501',
     title: 'ナビゲーションバーのレスポンシブ性を向上',
     description: '',
     status: getStatusByIndex(1),
@@ -149,7 +149,7 @@ export const issues: Issue[] = [
   },
   {
     id: '6',
-    identifier: 'LNUI-502',
+    identifier: 'CIR-502',
     title: 'フッターの読み込み時間を最適化',
     description: '',
     status: getStatusByIndex(2),
@@ -163,7 +163,7 @@ export const issues: Issue[] = [
   },
   {
     id: '7',
-    identifier: 'LNUI-503',
+    identifier: 'CIR-503',
     title: 'アクセシビリティ向上のためにサイドバーをリファクタリング',
     description: '',
     status: getStatusByIndex(3),
@@ -177,7 +177,7 @@ export const issues: Issue[] = [
   },
   {
     id: '8',
-    identifier: 'LNUI-504',
+    identifier: 'CIR-504',
     title: '新しいカードコンポーネントデザインを実装',
     description: '',
     status: getStatusByIndex(4),
@@ -191,7 +191,7 @@ export const issues: Issue[] = [
   },
   {
     id: '9',
-    identifier: 'LNUI-505',
+    identifier: 'CIR-505',
     title: 'ツールチップのインタラクティブ性を改善',
     description: '',
     status: getStatusByIndex(1),
@@ -205,7 +205,7 @@ export const issues: Issue[] = [
   },
   {
     id: '10',
-    identifier: 'LNUI-506',
+    identifier: 'CIR-506',
     title: 'モバイルデバイス向けにドロップダウンを再設計',
     description: '',
     status: getStatusByIndex(2),
@@ -219,7 +219,7 @@ export const issues: Issue[] = [
   },
   {
     id: '11',
-    identifier: 'LNUI-507',
+    identifier: 'CIR-507',
     title: 'フォームのバリデーション問題を修正',
     description: '',
     status: getStatusByIndex(3),
@@ -233,7 +233,7 @@ export const issues: Issue[] = [
   },
   {
     id: '12',
-    identifier: 'LNUI-508',
+    identifier: 'CIR-508',
     title: 'モーダルアニメーションを更新',
     description: '',
     status: getStatusByIndex(0),
@@ -247,7 +247,7 @@ export const issues: Issue[] = [
   },
   {
     id: '13',
-    identifier: 'LNUI-509',
+    identifier: 'CIR-509',
     title: 'ボタンの状態とインタラクションを刷新',
     description: '',
     status: getStatusByIndex(5),
@@ -261,7 +261,7 @@ export const issues: Issue[] = [
   },
   {
     id: '14',
-    identifier: 'LNUI-510',
+    identifier: 'CIR-510',
     title: '入力コンポーネントのスタイリングを合理化',
     description: '',
     status: getStatusByIndex(2),
@@ -275,7 +275,7 @@ export const issues: Issue[] = [
   },
   {
     id: '15',
-    identifier: 'LNUI-511',
+    identifier: 'CIR-511',
     title: '新しいセレクトコンポーネントの動作を統合',
     description: '',
     status: getStatusByIndex(3),
@@ -289,7 +289,7 @@ export const issues: Issue[] = [
   },
   {
     id: '16',
-    identifier: 'LNUI-512',
+    identifier: 'CIR-512',
     title: 'パンくずナビゲーションのユーザビリティを向上',
     description: '',
     status: getStatusByIndex(0),
@@ -303,7 +303,7 @@ export const issues: Issue[] = [
   },
   {
     id: '17',
-    identifier: 'LNUI-513',
+    identifier: 'CIR-513',
     title: 'スムーズな遷移のためにアコーディオンをリファクタリング',
     description: '',
     status: getStatusByIndex(1),
@@ -317,7 +317,7 @@ export const issues: Issue[] = [
   },
   {
     id: '18',
-    identifier: 'LNUI-514',
+    identifier: 'CIR-514',
     title: '遅延読み込み機能付きカルーセルを実装',
     description: '',
     status: getStatusByIndex(2),
@@ -331,7 +331,7 @@ export const issues: Issue[] = [
   },
   {
     id: '19',
-    identifier: 'LNUI-515',
+    identifier: 'CIR-515',
     title: 'レスポンシブデザイン向けにグリッドレイアウトを最適化',
     description: '',
     status: getStatusByIndex(3),
@@ -345,7 +345,7 @@ export const issues: Issue[] = [
   },
   {
     id: '20',
-    identifier: 'LNUI-516',
+    identifier: 'CIR-516',
     title: '明瞭さ向上のためにタイポグラフィシステムを更新',
     description: '',
     status: getStatusByIndex(4),
@@ -359,7 +359,7 @@ export const issues: Issue[] = [
   },
   {
     id: '21',
-    identifier: 'LNUI-517',
+    identifier: 'CIR-517',
     title: 'カラースキームの一貫性を改善',
     description: '',
     status: getStatusByIndex(1),
@@ -373,7 +373,7 @@ export const issues: Issue[] = [
   },
   {
     id: '22',
-    identifier: 'LNUI-518',
+    identifier: 'CIR-518',
     title: 'より良いスケーラビリティのための新しいアイコンセットを設計',
     description: '',
     status: getStatusByIndex(2),
@@ -387,7 +387,7 @@ export const issues: Issue[] = [
   },
   {
     id: '23',
-    identifier: 'LNUI-519',
+    identifier: 'CIR-519',
     title: '通知システムのタイミングを修正',
     description: '',
     status: getStatusByIndex(3),
@@ -401,7 +401,7 @@ export const issues: Issue[] = [
   },
   {
     id: '24',
-    identifier: 'LNUI-520',
+    identifier: 'CIR-520',
     title: 'ローディングインジケーターのパフォーマンスを向上',
     description: '',
     status: getStatusByIndex(0),
@@ -415,7 +415,7 @@ export const issues: Issue[] = [
   },
   {
     id: '25',
-    identifier: 'LNUI-521',
+    identifier: 'CIR-521',
     title: 'プログレスバーのアニメーションをリファクタリング',
     description: '',
     status: getStatusByIndex(5),
@@ -429,7 +429,7 @@ export const issues: Issue[] = [
   },
   {
     id: '26',
-    identifier: 'LNUI-522',
+    identifier: 'CIR-522',
     title: 'テーブルコンポーネントのソート機能を最適化',
     description: '',
     status: getStatusByIndex(2),
@@ -443,7 +443,7 @@ export const issues: Issue[] = [
   },
   {
     id: '27',
-    identifier: 'LNUI-523',
+    identifier: 'CIR-523',
     title: 'ページネーションロジックを改善',
     description: '',
     status: getStatusByIndex(3),
@@ -457,7 +457,7 @@ export const issues: Issue[] = [
   },
   {
     id: '28',
-    identifier: 'LNUI-524',
+    identifier: 'CIR-524',
     title: 'オートコンプリート機能付き検索バーを実装',
     description: '',
     status: getStatusByIndex(0),
@@ -471,7 +471,7 @@ export const issues: Issue[] = [
   },
   {
     id: '29',
-    identifier: 'LNUI-525',
+    identifier: 'CIR-525',
     title: '重要な通知のためのアラートシステムを更新',
     description: '',
     status: getStatusByIndex(1),
@@ -485,7 +485,7 @@ export const issues: Issue[] = [
   },
   {
     id: '30',
-    identifier: 'LNUI-526',
+    identifier: 'CIR-526',
     title: 'ユーザビリティ向上のためにオーバーレイを改良',
     description: '',
     status: getStatusByIndex(2),

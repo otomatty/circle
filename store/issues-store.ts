@@ -18,13 +18,20 @@ import type { Status } from '../types/status';
 import type { User } from '../types/users';
 
 /**
- * Server Action を発火し、失敗時にユーザーへトーストで通知するヘルパー。
- * 楽観的更新（Jotai 側）はそのまま残し、リロード時にサーバーの確定状態へ収束する。
+ * Fire a Server Action for an already-applied optimistic update. On failure it
+ * notifies the user (toast, Japanese), logs in English, and rolls the
+ * optimistic change back so the UI matches the server state.
  */
-function persist(promise: Promise<unknown>, errorMessage: string): void {
+function persist(
+  promise: Promise<unknown>,
+  userMessage: string,
+  logMessage: string,
+  rollback: () => void
+): void {
   promise.catch((error) => {
-    console.error(errorMessage, error);
-    toast.error(errorMessage);
+    console.error(logMessage, error);
+    toast.error(userMessage);
+    rollback();
   });
 }
 
@@ -86,10 +93,15 @@ export const updateIssueAtom = atom(
  *              書き込み関数は削除する Issue の ID を受け取ります。
  */
 export const deleteIssueAtom = atom(null, (get, set, id: string) => {
-  const currentIssues = get(issuesAtom);
-  const updatedIssues = currentIssues.filter((issue) => issue.id !== id);
+  const previousIssues = get(issuesAtom);
+  const updatedIssues = previousIssues.filter((issue) => issue.id !== id);
   set(issuesAtom, updatedIssues);
-  persist(deleteIssueAction(id), '課題の削除に失敗しました');
+  persist(
+    deleteIssueAction(id),
+    '課題の削除に失敗しました',
+    'Failed to delete issue',
+    () => set(issuesAtom, previousIssues)
+  );
 });
 
 /**
@@ -104,13 +116,16 @@ export const updateIssueStatusAtom = atom(
     { issueId, newStatus }: { issueId: string; newStatus: Status }
   ) => {
     // 内部で updateIssueAtom を呼び出す
+    const previousIssues = get(issuesAtom);
     set(updateIssueAtom, {
       id: issueId,
       updatedIssueData: { status: newStatus },
     });
     persist(
       updateIssueStatusAction(issueId, newStatus.id),
-      'ステータスの更新に失敗しました'
+      'ステータスの更新に失敗しました',
+      'Failed to update issue status',
+      () => set(issuesAtom, previousIssues)
     );
   }
 );
@@ -126,13 +141,16 @@ export const updateIssuePriorityAtom = atom(
     set,
     { issueId, newPriority }: { issueId: string; newPriority: Priority }
   ) => {
+    const previousIssues = get(issuesAtom);
     set(updateIssueAtom, {
       id: issueId,
       updatedIssueData: { priority: newPriority },
     });
     persist(
       updateIssuePriorityAction(issueId, newPriority.id),
-      '優先度の更新に失敗しました'
+      '優先度の更新に失敗しました',
+      'Failed to update issue priority',
+      () => set(issuesAtom, previousIssues)
     );
   }
 );
@@ -148,13 +166,16 @@ export const updateIssueAssigneeAtom = atom(
     set,
     { issueId, newAssignee }: { issueId: string; newAssignee: User | null }
   ) => {
+    const previousIssues = get(issuesAtom);
     set(updateIssueAtom, {
       id: issueId,
       updatedIssueData: { assignees: newAssignee },
     });
     persist(
       updateIssueAssigneeAction(issueId, newAssignee?.id ?? null),
-      '担当者の更新に失敗しました'
+      '担当者の更新に失敗しました',
+      'Failed to update issue assignee',
+      () => set(issuesAtom, previousIssues)
     );
   }
 );
@@ -173,6 +194,7 @@ export const addIssueLabelAtom = atom(
     const issue = get(issueByIdAtom(issueId)); // Get the specific issue
     if (issue && !issue.labels.some((l) => l.id === label.id)) {
       // Avoid duplicates
+      const previousIssues = get(issuesAtom);
       const updatedLabels = [...issue.labels, label];
       set(updateIssueAtom, {
         id: issueId,
@@ -180,7 +202,9 @@ export const addIssueLabelAtom = atom(
       });
       persist(
         addIssueLabelAction(issueId, label.id),
-        'ラベルの追加に失敗しました'
+        'ラベルの追加に失敗しました',
+        'Failed to add issue label',
+        () => set(issuesAtom, previousIssues)
       );
     }
   }
@@ -195,6 +219,7 @@ export const removeIssueLabelAtom = atom(
   (get, set, { issueId, labelId }: { issueId: string; labelId: string }) => {
     const issue = get(issueByIdAtom(issueId));
     if (issue) {
+      const previousIssues = get(issuesAtom);
       const updatedLabels = issue.labels.filter(
         (label) => label.id !== labelId
       );
@@ -204,7 +229,9 @@ export const removeIssueLabelAtom = atom(
       });
       persist(
         removeIssueLabelAction(issueId, labelId),
-        'ラベルの削除に失敗しました'
+        'ラベルの削除に失敗しました',
+        'Failed to remove issue label',
+        () => set(issuesAtom, previousIssues)
       );
     }
   }

@@ -1,6 +1,7 @@
 'use server';
 
 import { and, desc, eq, inArray, like, type SQL } from 'drizzle-orm';
+import type { BatchItem } from 'drizzle-orm/batch';
 
 import { getCurrentUserTeamIds, requireUser } from '~/lib/auth-server';
 import { getDb, type Db } from '~/lib/db';
@@ -62,11 +63,14 @@ export interface IssueDTO {
   project?: IssueProjectDTO;
 }
 
+// Fallback shown when an issue has no status. Uses a seeded slug (`to-do`) so
+// status-less issues still group into an existing board column rather than an
+// unknown one.
 const DEFAULT_STATUS: IssueStatusDTO = {
-  id: 'not-started',
+  id: 'to-do',
   name: '未着手',
-  color: '#CBD5E1',
-  icon: 'circle',
+  color: '#f97316',
+  icon: 'to-do',
 };
 
 const DEFAULT_PRIORITY: IssuePriorityDTO = {
@@ -126,6 +130,30 @@ async function assertIssueAccess(db: Db, issueId: string): Promise<string> {
   }
 
   return row.identifier;
+}
+
+/** Whether a project is linked to the given team (via `team_projects`). */
+async function isProjectInTeam(
+  db: Db,
+  projectId: string,
+  teamSlug: string
+): Promise<boolean> {
+  const [row] = await db
+    .select({ id: teamProjects.id })
+    .from(teamProjects)
+    .innerJoin(teams, eq(teamProjects.teamId, teams.id))
+    .where(
+      and(eq(teams.slug, teamSlug), eq(teamProjects.projectId, projectId))
+    )
+    .limit(1);
+  return Boolean(row);
+}
+
+type BatchWrite = BatchItem<'sqlite'>;
+
+function isUniqueViolation(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return message.includes('UNIQUE constraint failed');
 }
 
 // ---------------------------------------------------------------------------
@@ -481,40 +509,70 @@ export async function createIssue(input: CreateIssueInput): Promise<IssueDTO> {
 
   const db = getDb();
 
-  const [statusId, priorityId, identifier, rank] = await Promise.all([
+  const [statusId, priorityId] = await Promise.all([
     statusIdFromSlug(db, input.statusId),
     priorityIdFromSlug(db, input.priorityId),
-    nextIdentifier(db, teamSlug),
-    nextRank(db, teamSlug),
   ]);
+
+  // Only attach a project that is actually linked to the target team, so a
+  // stale/forged payload cannot cross-link an issue to another team's project
+  // (D1 has no RLS).
+  let projectId: string | null = null;
+  if (input.projectId && (await isProjectInTeam(db, input.projectId, teamSlug))) {
+    projectId = input.projectId;
+  }
 
   const id = crypto.randomUUID();
 
-  await db.insert(issues).values({
-    id,
-    identifier,
-    title,
-    description: input.description ?? null,
-    statusId,
-    priorityId,
-    projectId: input.projectId ?? null,
-    rank,
-    createdBy: sessionUser.id,
-  });
+  // Allocate the identifier and write the issue + its join rows atomically.
+  // `nextIdentifier` is read-then-write, so a concurrent create can race for the
+  // same value; retry on the resulting UNIQUE violation with a fresh number.
+  const MAX_ATTEMPTS = 5;
+  for (let attempt = 1; ; attempt++) {
+    const [identifier, rank] = await Promise.all([
+      nextIdentifier(db, teamSlug),
+      nextRank(db, teamSlug),
+    ]);
 
-  if (input.assigneeId) {
-    await db.insert(issueAssignees).values({
-      issueId: id,
-      userId: input.assigneeId,
-    });
-  }
+    const writes: BatchWrite[] = [
+      db.insert(issues).values({
+        id,
+        identifier,
+        title,
+        description: input.description ?? null,
+        statusId,
+        priorityId,
+        projectId,
+        rank,
+        createdBy: sessionUser.id,
+      }),
+    ];
 
-  if (input.labelIds && input.labelIds.length > 0) {
-    await db
-      .insert(issueLabels)
-      .values(
-        input.labelIds.map((labelId) => ({ issueId: id, labelId }))
+    if (input.assigneeId) {
+      writes.push(
+        db.insert(issueAssignees).values({ issueId: id, userId: input.assigneeId })
       );
+    }
+
+    if (input.labelIds && input.labelIds.length > 0) {
+      const uniqueLabelIds = [...new Set(input.labelIds)];
+      writes.push(
+        db
+          .insert(issueLabels)
+          .values(uniqueLabelIds.map((labelId) => ({ issueId: id, labelId })))
+          .onConflictDoNothing()
+      );
+    }
+
+    try {
+      await db.batch(writes as [BatchWrite, ...BatchWrite[]]);
+      break;
+    } catch (error) {
+      if (attempt < MAX_ATTEMPTS && isUniqueViolation(error)) {
+        continue;
+      }
+      throw error;
+    }
   }
 
   const dto = await loadIssueDTOById(db, id);

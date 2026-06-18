@@ -53,14 +53,14 @@ export function CreateNewIssue() {
   const statuses = useAtomValue(statusesAtom);
   const priorities = useAtomValue(prioritiesAtom);
 
-  // チームのスラッグはルート（/[orgId]/team/[teamId]/all）から取得する。
-  // identifier / rank はサーバー側で採番されるため、ここでは生成しない。
+  // Team slug comes from the route (/[orgId]/team/[teamId]/all). The identifier
+  // and rank are minted server-side, so they are not generated here.
   const params = useParams();
   const teamId =
     typeof params?.teamId === 'string' ? params.teamId : undefined;
 
-  // 新規課題のデフォルトデータ（フォームの初期値）を作成する関数。
-  // identifier と rank はサーバー側で確定するためプレースホルダーを置く。
+  // Build the default form data for a new issue. The identifier and rank are
+  // finalized on the server, so placeholders are used here.
   const createDefaultData = useCallback((): Issue => {
     const initialStatus: Status | undefined =
       defaultStatus || statuses.find((s) => s.id === 'to-do');
@@ -131,7 +131,8 @@ export function CreateNewIssue() {
     setIsSubmitting(true);
     let createdIssue: Issue;
     try {
-      // D1 に永続化（identifier / rank はサーバー側で採番）し、確定済みの課題を取得。
+      // Persist to D1 (identifier / rank minted server-side) and get the
+      // confirmed issue back.
       const dto = await createIssueAction({
         title: addIssueForm.title,
         description: addIssueForm.description,
@@ -144,7 +145,7 @@ export function CreateNewIssue() {
       });
       createdIssue = dto as unknown as Issue;
     } catch (error) {
-      console.error('課題の作成に失敗しました', error);
+      console.error('Failed to create issue', error);
       toast.error('課題の作成に失敗しました');
       setIsSubmitting(false);
       return;
